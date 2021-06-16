@@ -321,8 +321,6 @@ class Ui_App(object):
         self.floor_loss_factor_value.addItem("")
         self.floor_loss_factor_value.addItem("")
         self.floor_loss_factor_value.addItem("")
-        self.floor_loss_factor_value.addItem("")
-        self.floor_loss_factor_value.setItemText(7, "")
         self.gridLayout.addWidget(self.floor_loss_factor_value, 6, 1, 1, 1)
         self.power_loss_value = QtWidgets.QComboBox(self.formLayoutWidget_2)
         self.power_loss_value.setObjectName("power_loss_value")

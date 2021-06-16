@@ -325,8 +325,6 @@ class Ui_App(object):
         self.floor_loss_factor_value.addItem("")
         self.floor_loss_factor_value.addItem("")
         self.floor_loss_factor_value.addItem("")
-        self.floor_loss_factor_value.addItem("")
-        self.floor_loss_factor_value.setItemText(7, "")
         self.gridLayout.addWidget(self.floor_loss_factor_value, 6, 1, 1, 1)
         self.power_loss_value = QtWidgets.QComboBox(self.formLayoutWidget_2)
         self.power_loss_value.setObjectName("power_loss_value")
@@ -426,6 +424,7 @@ class Ui_App(object):
         QtCore.QMetaObject.connectSlotsByName(App)
 
         # DEFAULT VALUES
+        # ------------ INDOOR ------------
         # Text Values
         self.frequency_outdoor.setEnabled(True)
         self.loss_exp_value.setDisabled(True)
@@ -441,6 +440,23 @@ class Ui_App(object):
         self.suburb_rb.setDisabled(True)
         self.village_rb.setDisabled(True)
         self.open_area_rb.setDisabled(True)
+        # ------------ OUTDOOR ------------
+        # Text Values
+        self.frequency_indoor.setEnabled(True)
+        self.max_distance_value.setEnabled(True)
+        self.reference_distance_value.setEnabled(True)
+        self.power_loss_value.setEnabled(True)
+        self.path_loss_exp_value.setEnabled(True)
+        self.floor_loss_factor_value.setEnabled(True)
+        self.floor_number.setDisabled(True)
+        self.area_value.setDisabled(True)
+        # Radio Buttons
+        self.itu_rb.setEnabled(True)
+        self.log_distance_rb.setEnabled(True)
+        self.no_fading_rb.setDisabled(True)
+        self.slow_fading_rb.setDisabled(True)
+        self.fast_fading_rb.setDisabled(True)
+
         # X Y Axis Labels
         self.graphics_view.setLabel('left', 'Path Loss (dB)')
         self.graphics_view.setLabel('bottom', 'Distance (Meters)')
@@ -448,22 +464,20 @@ class Ui_App(object):
         self.graphics_view_2.setLabel('bottom', 'Distance (Meters)')
 
         # Graph Events
-        # hour = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-        # temperature = [30, 32, 34, 32, 33, 31, 29, 32, 35, 45]
         self.graphics_view.setBackground('w')
         self.graphics_view_2.setBackground('w')
-        # self.graphics_view.plot(hour, temperature)
 
         # Calculation Events
         self.calc_outdoor_btn.clicked.connect(self.calculate_outdoor_model)
         self.calc_indoor_btn.clicked.connect(self.calculate_indoor_model)
-        # Radio Button Events
+        # Radio Button Events --- OUTDOOR
         self.free_space_rb.clicked.connect(self.de_selection)
         self.okumura_rb.clicked.connect(self.de_selection)
         self.ecc_33_rb.clicked.connect(self.de_selection)
         self.cost_231_rb.clicked.connect(self.de_selection)
         self.two_ray_rb_2.clicked.connect(self.de_selection)
         self.ericsson_rb.clicked.connect(self.de_selection)
+        # Radio Button Events --- INDOOR
 
     def retranslateUi(self, App):
         _translate = QtCore.QCoreApplication.translate
@@ -571,13 +585,13 @@ class Ui_App(object):
             self.ericsson_outdoor_model()
 
     def calculate_indoor_model(self) -> None:
-        print(f'{int(self.frequency_indoor.text()) + int(self.frequency_indoor.text())}')
+        if self.itu_rb.isChecked():
+            self.itu_indoor_model()
+        elif self.log_distance_rb.isChecked():
+            self.log_distance_indoor_model()
 
     def free_space_outdoor_model(self) -> None:
         # print("Free Space Outdoor Model Calculation")
-        # Constants
-        c1: int = 20
-        c2: float = 32.34
         # Frequency in HZ
         f: float = float(self.frequency_outdoor.text())
         # Max Distance in meters
@@ -586,7 +600,7 @@ class Ui_App(object):
         distance_space = np.arange(1, int(d) + 1)
 
         # Free Space Model
-        pathLoss = c1 * (np.log10(distance_space)) + c1 * (np.log10(int(f))) + c2
+        pathLoss = 20 * (np.log10(distance_space)) + 20 * (np.log10(int(f))) + 32.34
 
         distance_space *= 1000
 
@@ -595,7 +609,7 @@ class Ui_App(object):
         self.graphics_view.plot(distance_space, pathLoss)
 
     def okumura_hata_outdoor_model(self) -> None:
-        print("Okumura Hata Outdoor Model Calculation")
+        # print("Okumura Hata Outdoor Model Calculation")
         # Equations from pdf
         # Urban
         if self.urban_rb.isChecked():
@@ -699,7 +713,7 @@ class Ui_App(object):
             self.graphics_view.plot(distance_space, pathLoss)
 
     def ecc_33_outdoor_model(self) -> None:
-        print("ECC 33 Outdoor Model Calculation")
+        # print("ECC 33 Outdoor Model Calculation")
         if self.no_option_rb.isChecked():
             # Frequency in HZ
             f: float = float(self.frequency_outdoor.text())
@@ -755,7 +769,7 @@ class Ui_App(object):
             self.graphics_view.plot(distance_space, pathLoss)
 
     def cost_231_outdoor_model(self) -> None:
-        print("Cost 231 Outdoor Model Calculation")
+        # print("Cost 231 Outdoor Model Calculation")
         # Frequency in HZ
         f: float = float(self.frequency_outdoor.text())
         # Max Distance in meters
@@ -785,7 +799,7 @@ class Ui_App(object):
         self.graphics_view.plot(distance_space, pathLoss)
 
     def two_ray_outdoor_model(self) -> None:
-        print("Two-Ray Outdoor Model Calculation")
+        # print("Two-Ray Outdoor Model Calculation")
         # Max Distance in meters
         d: float = float(self.distance_max_meter.text())
 
@@ -805,7 +819,7 @@ class Ui_App(object):
         self.graphics_view.plot(distance_space, pathLoss)
 
     def ericsson_outdoor_model(self) -> None:
-        print("Ericsson Outdoor Model Calculation")
+        # print("Ericsson Outdoor Model Calculation")
         # Frequency in HZ
         f: float = float(self.frequency_outdoor.text())
         # Max Distance in meters
@@ -834,7 +848,7 @@ class Ui_App(object):
             pass
 
         pathLoss_Str = str(round(pathLoss[-1], 2))
- 
+
         distance_space *= 1000
 
         self.graphics_view.clear()
@@ -947,3 +961,20 @@ class Ui_App(object):
             self.village_rb.setEnabled(True)
             self.open_area_rb.setDisabled(True)
             self.no_option_rb.setDisabled(True)
+
+    def itu_indoor_model(self):
+        print("ITU Indoor Model Calculation")
+        pass
+
+    def log_distance_indoor_model(self):
+        # Frequency in HZ
+        f: float = float(self.frequency_indoor.text())
+        # Max Distance in meters
+        d: float = float(self.max_distance_value.text())
+        n = [2.0, 2.2, 1.8, 3.0, 2.4, 2.6, 2.0, 2.1, 2.2, 1.7]
+        frequency_of_transmission = [914, 914, 1500, 900, 1900, 1300, 4000, 60000, 60000]
+        xs = 2
+        distance_space = np.arange(1, int(d) + 1)
+
+        free_space_path_loss = 20 * (np.log10(distance_space)) + 20 * (np.log10(int(f))) + 32.34
+        pathLoss = free_space_path_loss + 10 * n * np.log10(d / d0) + Xs
