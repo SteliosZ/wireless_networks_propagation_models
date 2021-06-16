@@ -11,6 +11,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from pyqtgraph import PlotWidget
+import numpy as np
 
 
 class Ui_App(object):
@@ -86,6 +87,9 @@ class Ui_App(object):
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.verticalWidget_2)
         self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.no_option_rb = QtWidgets.QRadioButton(self.verticalWidget_2)
+        self.no_option_rb.setObjectName("no_option_rb")
+        self.verticalLayout_2.addWidget(self.no_option_rb)
         self.metro_rb = QtWidgets.QRadioButton(self.verticalWidget_2)
         self.metro_rb.setMinimumSize(QtCore.QSize(139, 18))
         self.metro_rb.setMaximumSize(QtCore.QSize(139, 18))
@@ -126,61 +130,68 @@ class Ui_App(object):
         self.gridLayout_2 = QtWidgets.QGridLayout(self.formLayoutWidget)
         self.gridLayout_2.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_2.setObjectName("gridLayout_2")
-        self.Loss_exp_label = QtWidgets.QLabel(self.formLayoutWidget)
-        self.Loss_exp_label.setMinimumSize(QtCore.QSize(141, 25))
-        self.Loss_exp_label.setMaximumSize(QtCore.QSize(141, 25))
-        self.Loss_exp_label.setObjectName("Loss_exp_label")
-        self.gridLayout_2.addWidget(self.Loss_exp_label, 1, 0, 1, 1)
-        self.max_meter_label = QtWidgets.QLabel(self.formLayoutWidget)
-        self.max_meter_label.setMinimumSize(QtCore.QSize(102, 25))
-        self.max_meter_label.setMaximumSize(QtCore.QSize(102, 25))
-        self.max_meter_label.setObjectName("max_meter_label")
-        self.gridLayout_2.addWidget(self.max_meter_label, 4, 0, 1, 1)
-        self.loss_exp_value = QtWidgets.QLineEdit(self.formLayoutWidget)
-        self.loss_exp_value.setMinimumSize(QtCore.QSize(179, 25))
-        self.loss_exp_value.setMaximumSize(QtCore.QSize(179, 25))
-        self.loss_exp_value.setStyleSheet("border-color: rgb(52, 101, 164);")
-        self.loss_exp_value.setObjectName("loss_exp_value")
-        self.gridLayout_2.addWidget(self.loss_exp_value, 1, 1, 1, 1)
-        self.receiver_height_label = QtWidgets.QLabel(self.formLayoutWidget)
-        self.receiver_height_label.setMinimumSize(QtCore.QSize(151, 25))
-        self.receiver_height_label.setMaximumSize(QtCore.QSize(151, 25))
-        self.receiver_height_label.setObjectName("receiver_height_label")
-        self.gridLayout_2.addWidget(self.receiver_height_label, 3, 0, 1, 1)
-        self.receiver_height = QtWidgets.QLineEdit(self.formLayoutWidget)
-        self.receiver_height.setMinimumSize(QtCore.QSize(179, 25))
-        self.receiver_height.setMaximumSize(QtCore.QSize(179, 25))
-        self.receiver_height.setStyleSheet("border-color: rgb(52, 101, 164);")
-        self.receiver_height.setObjectName("receiver_height")
-        self.gridLayout_2.addWidget(self.receiver_height, 3, 1, 1, 1)
-        self.freq_label = QtWidgets.QLabel(self.formLayoutWidget)
-        self.freq_label.setMinimumSize(QtCore.QSize(103, 25))
-        self.freq_label.setMaximumSize(QtCore.QSize(103, 25))
-        self.freq_label.setObjectName("freq_label")
-        self.gridLayout_2.addWidget(self.freq_label, 0, 0, 1, 1)
-        self.transmitter_height = QtWidgets.QLineEdit(self.formLayoutWidget)
-        self.transmitter_height.setMinimumSize(QtCore.QSize(179, 25))
-        self.transmitter_height.setMaximumSize(QtCore.QSize(179, 25))
-        self.transmitter_height.setStyleSheet("border-color: rgb(52, 101, 164);")
-        self.transmitter_height.setObjectName("transmitter_height")
-        self.gridLayout_2.addWidget(self.transmitter_height, 2, 1, 1, 1)
-        self.frequency_outdoor = QtWidgets.QLineEdit(self.formLayoutWidget)
-        self.frequency_outdoor.setMinimumSize(QtCore.QSize(179, 25))
-        self.frequency_outdoor.setMaximumSize(QtCore.QSize(179, 25))
-        self.frequency_outdoor.setStyleSheet("border-color: rgb(52, 101, 164);")
-        self.frequency_outdoor.setObjectName("frequency_outdoor")
-        self.gridLayout_2.addWidget(self.frequency_outdoor, 0, 1, 1, 1)
         self.trans_height_label = QtWidgets.QLabel(self.formLayoutWidget)
         self.trans_height_label.setMinimumSize(QtCore.QSize(172, 25))
         self.trans_height_label.setMaximumSize(QtCore.QSize(172, 25))
         self.trans_height_label.setObjectName("trans_height_label")
         self.gridLayout_2.addWidget(self.trans_height_label, 2, 0, 1, 1)
+        self.Loss_exp_label = QtWidgets.QLabel(self.formLayoutWidget)
+        self.Loss_exp_label.setMinimumSize(QtCore.QSize(141, 25))
+        self.Loss_exp_label.setMaximumSize(QtCore.QSize(141, 25))
+        self.Loss_exp_label.setObjectName("Loss_exp_label")
+        self.gridLayout_2.addWidget(self.Loss_exp_label, 1, 0, 1, 1)
+        self.receiver_height_label = QtWidgets.QLabel(self.formLayoutWidget)
+        self.receiver_height_label.setMinimumSize(QtCore.QSize(151, 25))
+        self.receiver_height_label.setMaximumSize(QtCore.QSize(151, 25))
+        self.receiver_height_label.setObjectName("receiver_height_label")
+        self.gridLayout_2.addWidget(self.receiver_height_label, 3, 0, 1, 1)
         self.distance_max_meter = QtWidgets.QLineEdit(self.formLayoutWidget)
         self.distance_max_meter.setMinimumSize(QtCore.QSize(179, 25))
         self.distance_max_meter.setMaximumSize(QtCore.QSize(179, 25))
         self.distance_max_meter.setStyleSheet("border-color: rgb(52, 101, 164);")
         self.distance_max_meter.setObjectName("distance_max_meter")
         self.gridLayout_2.addWidget(self.distance_max_meter, 4, 1, 1, 1)
+        self.transmitter_height = QtWidgets.QLineEdit(self.formLayoutWidget)
+        self.transmitter_height.setMinimumSize(QtCore.QSize(179, 25))
+        self.transmitter_height.setMaximumSize(QtCore.QSize(179, 25))
+        self.transmitter_height.setStyleSheet("border-color: rgb(52, 101, 164);")
+        self.transmitter_height.setObjectName("transmitter_height")
+        self.gridLayout_2.addWidget(self.transmitter_height, 2, 1, 1, 1)
+        self.max_meter_label = QtWidgets.QLabel(self.formLayoutWidget)
+        self.max_meter_label.setMinimumSize(QtCore.QSize(102, 25))
+        self.max_meter_label.setMaximumSize(QtCore.QSize(102, 25))
+        self.max_meter_label.setObjectName("max_meter_label")
+        self.gridLayout_2.addWidget(self.max_meter_label, 4, 0, 1, 1)
+        self.freq_label = QtWidgets.QLabel(self.formLayoutWidget)
+        self.freq_label.setMinimumSize(QtCore.QSize(103, 25))
+        self.freq_label.setMaximumSize(QtCore.QSize(103, 25))
+        self.freq_label.setObjectName("freq_label")
+        self.gridLayout_2.addWidget(self.freq_label, 0, 0, 1, 1)
+        self.frequency_outdoor = QtWidgets.QLineEdit(self.formLayoutWidget)
+        self.frequency_outdoor.setMinimumSize(QtCore.QSize(179, 25))
+        self.frequency_outdoor.setMaximumSize(QtCore.QSize(179, 25))
+        self.frequency_outdoor.setStyleSheet("border-color: rgb(52, 101, 164);")
+        self.frequency_outdoor.setObjectName("frequency_outdoor")
+        self.gridLayout_2.addWidget(self.frequency_outdoor, 0, 1, 1, 1)
+        self.loss_exp_value = QtWidgets.QLineEdit(self.formLayoutWidget)
+        self.loss_exp_value.setMinimumSize(QtCore.QSize(179, 25))
+        self.loss_exp_value.setMaximumSize(QtCore.QSize(179, 25))
+        self.loss_exp_value.setStyleSheet("border-color: rgb(52, 101, 164);")
+        self.loss_exp_value.setObjectName("loss_exp_value")
+        self.gridLayout_2.addWidget(self.loss_exp_value, 1, 1, 1, 1)
+        self.receiver_height = QtWidgets.QLineEdit(self.formLayoutWidget)
+        self.receiver_height.setMinimumSize(QtCore.QSize(179, 25))
+        self.receiver_height.setMaximumSize(QtCore.QSize(179, 25))
+        self.receiver_height.setStyleSheet("border-color: rgb(52, 101, 164);")
+        self.receiver_height.setObjectName("receiver_height")
+        self.gridLayout_2.addWidget(self.receiver_height, 3, 1, 1, 1)
+        self.transmitter_gain_value = QtWidgets.QLineEdit(self.formLayoutWidget)
+        self.transmitter_gain_value.setStyleSheet("border-color: rgb(52, 101, 164);")
+        self.transmitter_gain_value.setObjectName("transmitter_gain_value")
+        self.gridLayout_2.addWidget(self.transmitter_gain_value, 5, 1, 1, 1)
+        self.transmitter_gain_label = QtWidgets.QLabel(self.formLayoutWidget)
+        self.transmitter_gain_label.setObjectName("transmitter_gain_label")
+        self.gridLayout_2.addWidget(self.transmitter_gain_label, 5, 0, 1, 1)
         self.correction_factor_label = QtWidgets.QLabel(self.outdoor_models)
         self.correction_factor_label.setGeometry(QtCore.QRect(250, 340, 141, 31))
         self.correction_factor_label.setMinimumSize(QtCore.QSize(141, 31))
@@ -413,9 +424,43 @@ class Ui_App(object):
         self.actionClose.triggered.connect(App.close)
         QtCore.QMetaObject.connectSlotsByName(App)
 
-        # Events
+        # DEFAULT VALUES
+        # Text Values
+        self.frequency_outdoor.setEnabled(True)
+        self.loss_exp_value.setDisabled(True)
+        self.transmitter_height.setDisabled(True)
+        self.receiver_height.setDisabled(True)
+        self.max_distance_value.setEnabled(True)
+        self.transmitter_gain_value.setDisabled(True)
+        # Radio Buttons
+        self.no_option_rb.setDisabled(True)
+        self.metro_rb.setDisabled(True)
+        self.urban_rb.setDisabled(True)
+        self.med_city_rb.setDisabled(True)
+        self.suburb_rb.setDisabled(True)
+        self.village_rb.setDisabled(True)
+        self.open_area_rb.setDisabled(True)
+        # X Y Axis Labels
+        self.graphics_view.setLabel('left', 'Path Loss (dB)')
+        self.graphics_view.setLabel('bottom', 'Distance (Meters)')
+        self.graphics_view_2.setLabel('left', 'Path Loss (dB)')
+        self.graphics_view_2.setLabel('bottom', 'Distance (Meters)')
+
+        # Graph Events
+        # hour = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        # temperature = [30, 32, 34, 32, 33, 31, 29, 32, 35, 45]
+        self.graphics_view.setBackground('w')
+        self.graphics_view_2.setBackground('w')
+        # self.graphics_view.plot(hour, temperature)
+
+        # Calculation Events
         self.calc_outdoor_btn.clicked.connect(self.calculate_outdoor_model)
         self.calc_indoor_btn.clicked.connect(self.calculate_indoor_model)
+        # Radio Button Events
+        self.free_space_rb.clicked.connect(self.de_selection)
+        self.okumura_rb.clicked.connect(self.de_selection)
+        self.ecc_33_rb.clicked.connect(self.de_selection)
+        self.cost_231_rb.clicked.connect(self.de_selection)
 
     def retranslateUi(self, App):
         _translate = QtCore.QCoreApplication.translate
@@ -426,22 +471,25 @@ class Ui_App(object):
         self.cost_231_rb.setText(_translate("App", "Cost 231"))
         self.two_ray_rb_2.setText(_translate("App", "Two - Ray"))
         self.ericsson_rb.setText(_translate("App", "Ericsson"))
+        self.no_option_rb.setText(_translate("App", "No Option"))
         self.metro_rb.setText(_translate("App", "Metropolitan"))
         self.urban_rb.setText(_translate("App", "Urban"))
         self.med_city_rb.setText(_translate("App", "Medium City"))
         self.suburb_rb.setText(_translate("App", "Sub-Urban"))
         self.village_rb.setText(_translate("App", "Village"))
         self.open_area_rb.setText(_translate("App", "Open Area"))
-        self.Loss_exp_label.setText(_translate("App", "   L   (Loss exponent) "))
-        self.max_meter_label.setText(_translate("App", "  Max Distance:"))
-        self.loss_exp_value.setPlaceholderText(_translate("App", "Value"))
-        self.receiver_height_label.setText(_translate("App", "  Reciever Height (Htt)"))
-        self.receiver_height.setPlaceholderText(_translate("App", "Meters"))
-        self.freq_label.setText(_translate("App", "   Frequency (F)"))
-        self.transmitter_height.setPlaceholderText(_translate("App", "Meters"))
-        self.frequency_outdoor.setPlaceholderText(_translate("App", "Hz"))
         self.trans_height_label.setText(_translate("App", "  Transmitter Height (Htr)"))
+        self.Loss_exp_label.setText(_translate("App", "   L   (Loss exponent) "))
+        self.receiver_height_label.setText(_translate("App", "  Reciever Height (Htt)"))
         self.distance_max_meter.setPlaceholderText(_translate("App", "Meters"))
+        self.transmitter_height.setPlaceholderText(_translate("App", "Meters"))
+        self.max_meter_label.setText(_translate("App", "  Max Distance:"))
+        self.freq_label.setText(_translate("App", "   Frequency (F)"))
+        self.frequency_outdoor.setPlaceholderText(_translate("App", "Hz"))
+        self.loss_exp_value.setPlaceholderText(_translate("App", "Value"))
+        self.receiver_height.setPlaceholderText(_translate("App", "Meters"))
+        self.transmitter_gain_value.setPlaceholderText(_translate("App", "dB"))
+        self.transmitter_gain_label.setText(_translate("App", "Transmitter Gain"))
         self.correction_factor_label.setText(_translate("App", "Correction Factor (Ch)"))
         self.prop_model_label.setText(_translate("App", "Propagation Models:"))
         self.calc_outdoor_btn.setText(_translate("App", "Calculate"))
@@ -523,24 +571,155 @@ class Ui_App(object):
         print(f'{int(self.frequency_indoor.text()) + int(self.frequency_indoor.text())}')
 
     def free_space_outdoor_model(self) -> None:
-        print("Free Space Outdoor Model Calculation")
+        # print("Free Space Outdoor Model Calculation")
         # Constants
         c1: int = 20
-        c2: float = 147.55
+        c2: float = 32.34
         # Frequency in HZ
         f: float = float(self.frequency_outdoor.text())
         # Max Distance in meters
         d: float = float(self.distance_max_meter.text())
 
+        distance_space = np.arange(1, int(d) + 1)
+
+        # Free Space Model
+        pathLoss = c1 * (np.log10(distance_space)) + c1 * (np.log10(int(f))) + c2
+
+        distance_space *= 1000
+
+        self.graphics_view.clear()
+        self.graphics_view.setTitle(f"Path loss : {str(round(pathLoss[-1], 2))} dB")
+        self.graphics_view.plot(distance_space, pathLoss)
+
     def okumura_hata_outdoor_model(self) -> None:
         print("Okumura Hata Outdoor Model Calculation")
         # Equations from pdf
         # Urban
+        if self.urban_rb.isChecked():
+            # Frequency in HZ
+            f: float = float(self.frequency_outdoor.text())
+            # Max Distance in meters
+            d: float = float(self.distance_max_meter.text())
+
+            distance_space = np.arange(1, int(d) + 1)
+
+            htr = float(self.transmitter_height.text())
+            htt = float(self.receiver_height.text())
+
+            # Okumura Hata Model
+            CH = 0.8 + (1.1 * ((np.log10(int(f))) - 0.7)) * (int(htt)) - (1.56 * (np.log10(int(f))))
+            pathLoss = 69.55 + 26.16 * (np.log10(int(f))) - 13.82 * (np.log10(int(htr))) - CH + (
+                    44.9 - 6.55 * (np.log10(int(htr)))) * (np.log10(distance_space))
+
+            distance_space *= 1000
+
+            self.graphics_view.clear()
+            self.graphics_view.setTitle(f"Path loss : {str(round(pathLoss[-1], 2))} dB")
+            self.graphics_view.plot(distance_space, pathLoss)
         # SubUrban
+        elif self.suburb_rb.isChecked():
+            # Frequency in HZ
+            f: float = float(self.frequency_outdoor.text())
+            # Max Distance in meters
+            d: float = float(self.distance_max_meter.text())
+
+            distance_space = np.arange(1, int(d) + 1)
+
+            htr = float(self.transmitter_height.text())
+            htt = float(self.receiver_height.text())
+
+            CH = 0.8 + (1.1 * ((np.log10(int(f))) - 0.7)) * (int(htt)) - (1.56 * (np.log10(int(f))))
+            LSU = 2 * (((np.log10(int(f))) / 28) ** 2) - 5.4
+            pathLoss = 69.55 + 26.16 * (np.log10(int(f))) - 13.82 * (np.log10(int(htr))) - CH + (
+                    44.9 - 6.55 * (np.log10(int(htr)))) * (np.log10(distance_space)) - LSU
+
+            pathLoss_Str = str(round(pathLoss[-1], 2))
+
+            distance_space *= 1000
+
+            self.graphics_view.clear()
+            self.graphics_view.setTitle(f"Path loss : {pathLoss_Str} dB")
+            self.graphics_view.plot(distance_space, pathLoss)
         # Open
+        elif self.open_area_rb.isChecked():
+            # Frequency in HZ
+            f: float = float(self.frequency_outdoor.text())
+            # Max Distance in meters
+            d: float = float(self.distance_max_meter.text())
+
+            distance_space = np.arange(1, int(d) + 1)
+
+            htr = float(self.transmitter_height.text())
+            htt = float(self.receiver_height.text())
+
+            CH = 0.8 + (1.1 * ((np.log10(int(f))) - 0.7)) * (int(htt)) - (1.56 * (np.log10(int(f))))
+            pathLoss = 69.55 + 26.16 * (np.log10(int(f))) - 13.82 * (np.log10(int(htr))) - CH + (
+                    44.9 - 6.55 * (np.log10(int(htr)))) * np.log10(distance_space) - 40.99 - 4.78 * np.power(
+                np.log10(int(f)), 2) + 18.33 * np.log10(int(f))
+
+            pathLoss_Str = str(round(pathLoss[-1], 2))
+
+            distance_space *= 1000
+
+            self.graphics_view.clear()
+            self.graphics_view.setTitle(f"Path loss : {pathLoss_Str} dB")
+            self.graphics_view.plot(distance_space, pathLoss)
 
     def ecc_33_outdoor_model(self) -> None:
         print("ECC 33 Outdoor Model Calculation")
+        if self.no_option_rb.isChecked():
+            # Frequency in HZ
+            f: float = float(self.frequency_outdoor.text())
+            # Max Distance in meters
+            d: float = float(self.distance_max_meter.text())
+
+            distance_space = np.arange(1, int(d) + 1)
+
+            htr = float(self.transmitter_height.text())
+            htt = float(self.receiver_height.text())
+
+            Asf = 92.4 + 20 * np.log10(distance_space) + 20 * np.log10(int(f))
+            Amb = 20.41 + 9.83 * np.log10(distance_space) + 7.894 * np.log10(int(f)) + 9.56 * \
+                  np.power(np.log10(int(f)), 2)
+            Gd = np.log10(htr / 200) * (13.958 + 5.8 * np.power(np.log10(distance_space), 2))
+            Gs = (42.57 + 13.7 * (np.log10(int(f)))) * (np.log10(htr) - 0.585)
+
+            pathLoss = Asf + Amb - Gd - Gs
+
+            pathLoss_Str = str(round(pathLoss[-1], 2))
+
+            distance_space *= 1000
+
+            self.graphics_view.clear()
+            self.graphics_view.setTitle(f"Path loss : {pathLoss_Str} dB")
+            self.graphics_view.plot(distance_space, pathLoss)
+
+        elif self.urban_rb.isChecked():
+            # Frequency in HZ
+            f: float = float(self.frequency_outdoor.text())
+            # Max Distance in meters
+            d: float = float(self.distance_max_meter.text())
+
+            distance_space = np.arange(1, int(d) + 1)
+
+            htr = float(self.transmitter_height.text())
+            htt = float(self.receiver_height.text())
+
+            Asf = 92.4 + 20 * np.log10(distance_space) + 20 * np.log10(int(f))
+            Amb = 20.41 + 9.83 * np.log10(distance_space) + 7.894 * np.log10(int(f)) + 9.56 * \
+                  np.power(np.log10(int(f)), 2)
+            Gd = np.log10(htr / 200) * (13.958 + 5.8 * np.power(np.log10(distance_space), 2))
+            Gs = 0.759 * htr - 1.862
+
+            pathLoss = Asf + Amb - Gd - Gs
+
+            pathLoss_Str = str(round(pathLoss[-1], 2))
+
+            distance_space *= 1000
+
+            self.graphics_view.clear()
+            self.graphics_view.setTitle(f"Path loss : {pathLoss_Str} dB")
+            self.graphics_view.plot(distance_space, pathLoss)
 
     def cost_231_outdoor_model(self) -> None:
         print("Cost 231 Outdoor Model Calculation")
@@ -550,3 +729,75 @@ class Ui_App(object):
 
     def ericsson_outdoor_mode(self) -> None:
         print("Ericsson Outdoor Model Calculation")
+
+    def de_selection(self) -> None:
+        if self.free_space_rb.isChecked():
+            # Text Values
+            self.transmitter_gain_value.setDisabled(True)
+            self.frequency_outdoor.setEnabled(True)
+            self.loss_exp_value.setDisabled(True)
+            self.transmitter_height.setDisabled(True)
+            self.receiver_height.setDisabled(True)
+            self.max_distance_value.setEnabled(True)
+            # Radio Buttons
+            self.metro_rb.setDisabled(True)
+            self.urban_rb.setDisabled(True)
+            self.med_city_rb.setDisabled(True)
+            self.suburb_rb.setDisabled(True)
+            self.village_rb.setDisabled(True)
+            self.open_area_rb.setDisabled(True)
+            self.no_option_rb.setDisabled(True)
+
+        elif self.okumura_rb.isChecked():
+            # Text Values
+            self.transmitter_gain_value.setDisabled(True)
+            self.frequency_outdoor.setEnabled(True)
+            self.loss_exp_value.setDisabled(True)
+            self.transmitter_height.setEnabled(True)
+            self.receiver_height.setEnabled(True)
+            self.max_distance_value.setEnabled(True)
+            # Radio Buttons
+            self.metro_rb.setDisabled(True)
+            self.urban_rb.setEnabled(True)
+            self.urban_rb.setChecked(True)
+            self.med_city_rb.setDisabled(True)
+            self.suburb_rb.setEnabled(True)
+            self.village_rb.setDisabled(True)
+            self.open_area_rb.setEnabled(True)
+            self.no_option_rb.setDisabled(True)
+
+        elif self.ecc_33_rb.isChecked():
+            # Text Values
+            self.transmitter_gain_value.setDisabled(True)
+            self.frequency_outdoor.setEnabled(True)
+            self.loss_exp_value.setDisabled(True)
+            self.transmitter_height.setEnabled(True)
+            self.receiver_height.setEnabled(True)
+            self.max_distance_value.setEnabled(True)
+            # Radio Buttons
+            self.metro_rb.setDisabled(True)
+            self.urban_rb.setEnabled(True)
+            self.med_city_rb.setDisabled(True)
+            self.suburb_rb.setDisabled(True)
+            self.village_rb.setDisabled(True)
+            self.open_area_rb.setDisabled(True)
+            self.no_option_rb.setEnabled(True)
+            self.no_option_rb.setChecked(True)
+
+        elif self.cost_231_rb.isChecked():
+            # Text Values
+            self.transmitter_gain_value.setDisabled(True)
+            self.frequency_outdoor.setEnabled(True)
+            self.loss_exp_value.setDisabled(True)
+            self.transmitter_height.setEnabled(True)
+            self.receiver_height.setEnabled(True)
+            self.max_distance_value.setEnabled(True)
+            # Radio Buttons
+            self.metro_rb.setEnabled(True)
+            self.metro_rb.setChecked(True)
+            self.urban_rb.setDisabled(True)
+            self.med_city_rb.setEnabled(True)
+            self.suburb_rb.setEnabled(True)
+            self.village_rb.setDisabled(True)
+            self.open_area_rb.setDisabled(True)
+            self.no_option_rb.setDisabled(True)

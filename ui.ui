@@ -45,7 +45,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <property name="movable">
      <bool>false</bool>
@@ -137,7 +137,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QRadioButton" name="cost_321_rb">
+        <widget class="QRadioButton" name="cost_231_rb">
          <property name="minimumSize">
           <size>
            <width>220</width>
@@ -156,7 +156,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QRadioButton" name="cost_321_rb_2">
+        <widget class="QRadioButton" name="two_ray_rb_2">
          <property name="minimumSize">
           <size>
            <width>220</width>
@@ -242,6 +242,13 @@
        <string notr="true">border-color: rgb(0, 0, 0);</string>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QRadioButton" name="no_option_rb">
+         <property name="text">
+          <string>No Option</string>
+         </property>
+        </widget>
+       </item>
        <item>
         <widget class="QRadioButton" name="metro_rb">
          <property name="minimumSize">
@@ -344,7 +351,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QRadioButton" name="openarea_rb">
+        <widget class="QRadioButton" name="open_area_rb">
          <property name="minimumSize">
           <size>
            <width>139</width>
@@ -386,6 +393,25 @@
        </size>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
+       <item row="2" column="0">
+        <widget class="QLabel" name="trans_height_label">
+         <property name="minimumSize">
+          <size>
+           <width>172</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>172</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>  Transmitter Height (Htr)</string>
+         </property>
+        </widget>
+       </item>
        <item row="1" column="0">
         <widget class="QLabel" name="Loss_exp_label">
          <property name="minimumSize">
@@ -405,47 +431,6 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="max_meter_label">
-         <property name="minimumSize">
-          <size>
-           <width>102</width>
-           <height>25</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>102</width>
-           <height>25</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>  Max Distance:</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="loss_exp_value">
-         <property name="minimumSize">
-          <size>
-           <width>179</width>
-           <height>25</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>179</width>
-           <height>25</height>
-          </size>
-         </property>
-         <property name="styleSheet">
-          <string notr="true">border-color: rgb(52, 101, 164);</string>
-         </property>
-         <property name="placeholderText">
-          <string>Value</string>
-         </property>
-        </widget>
-       </item>
        <item row="3" column="0">
         <widget class="QLabel" name="receiver_height_label">
          <property name="minimumSize">
@@ -461,12 +446,12 @@
           </size>
          </property>
          <property name="text">
-          <string>  Reciever Height (Htr)</string>
+          <string>  Reciever Height (Htt)</string>
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
-        <widget class="QLineEdit" name="receiver_height">
+       <item row="4" column="1">
+        <widget class="QLineEdit" name="distance_max_meter">
          <property name="minimumSize">
           <size>
            <width>179</width>
@@ -484,25 +469,6 @@
          </property>
          <property name="placeholderText">
           <string>Meters</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="freq_label">
-         <property name="minimumSize">
-          <size>
-           <width>103</width>
-           <height>25</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>103</width>
-           <height>25</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>   Frequency (F)</string>
          </property>
         </widget>
        </item>
@@ -528,6 +494,44 @@
          </property>
         </widget>
        </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="max_meter_label">
+         <property name="minimumSize">
+          <size>
+           <width>102</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>102</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>  Max Distance:</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="freq_label">
+         <property name="minimumSize">
+          <size>
+           <width>103</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>103</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>   Frequency (F)</string>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="1">
         <widget class="QLineEdit" name="frequency_outdoor">
          <property name="minimumSize">
@@ -550,27 +554,30 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="trans_height_label">
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="loss_exp_value">
          <property name="minimumSize">
           <size>
-           <width>172</width>
+           <width>179</width>
            <height>25</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
-           <width>172</width>
+           <width>179</width>
            <height>25</height>
           </size>
          </property>
-         <property name="text">
-          <string>  Transmitter Height (Htt)</string>
+         <property name="styleSheet">
+          <string notr="true">border-color: rgb(52, 101, 164);</string>
+         </property>
+         <property name="placeholderText">
+          <string>Value</string>
          </property>
         </widget>
        </item>
-       <item row="4" column="1">
-        <widget class="QLineEdit" name="distance_max_meter">
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="receiver_height">
          <property name="minimumSize">
           <size>
            <width>179</width>
@@ -588,6 +595,23 @@
          </property>
          <property name="placeholderText">
           <string>Meters</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLineEdit" name="transmitter_gain_value">
+         <property name="styleSheet">
+          <string notr="true">border-color: rgb(52, 101, 164);</string>
+         </property>
+         <property name="placeholderText">
+          <string>dB</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="transmitter_gain_label">
+         <property name="text">
+          <string>Transmitter Gain</string>
          </property>
         </widget>
        </item>
@@ -652,8 +676,8 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>453</x>
-        <y>496</y>
+        <x>460</x>
+        <y>480</y>
         <width>359</width>
         <height>25</height>
        </rect>
@@ -669,6 +693,9 @@
         <width>359</width>
         <height>25</height>
        </size>
+      </property>
+      <property name="cursor">
+       <cursorShape>ArrowCursor</cursorShape>
       </property>
       <property name="styleSheet">
        <string notr="true">background-color: rgb(78, 154, 6);</string>
@@ -705,7 +732,7 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
-        <widget class="QRadioButton" name="ITU_rb">
+        <widget class="QRadioButton" name="itu_rb">
          <property name="enabled">
           <bool>true</bool>
          </property>
@@ -756,8 +783,8 @@
       </property>
       <property name="geometry">
        <rect>
-        <x>453</x>
-        <y>496</y>
+        <x>460</x>
+        <y>480</y>
         <width>359</width>
         <height>25</height>
        </rect>
@@ -1258,7 +1285,7 @@
      <x>0</x>
      <y>0</y>
      <width>952</width>
-     <height>22</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
