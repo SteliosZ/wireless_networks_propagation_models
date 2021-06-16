@@ -11,6 +11,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from pyqtgraph import PlotWidget
+import pyqtgraph
 import numpy as np
 
 
@@ -461,6 +462,8 @@ class Ui_App(object):
         self.okumura_rb.clicked.connect(self.de_selection)
         self.ecc_33_rb.clicked.connect(self.de_selection)
         self.cost_231_rb.clicked.connect(self.de_selection)
+        self.two_ray_rb_2.clicked.connect(self.de_selection)
+        self.ericsson_rb.clicked.connect(self.de_selection)
 
     def retranslateUi(self, App):
         _translate = QtCore.QCoreApplication.translate
@@ -565,7 +568,7 @@ class Ui_App(object):
         elif self.two_ray_rb_2.isChecked():
             self.two_ray_outdoor_model()
         elif self.ericsson_rb.isChecked():
-            self.ericsson_outdoor_mode()
+            self.ericsson_outdoor_model()
 
     def calculate_indoor_model(self) -> None:
         print(f'{int(self.frequency_indoor.text()) + int(self.frequency_indoor.text())}')
@@ -603,19 +606,49 @@ class Ui_App(object):
 
             distance_space = np.arange(1, int(d) + 1)
 
-            htr = float(self.transmitter_height.text())
-            htt = float(self.receiver_height.text())
+            htr = int(self.transmitter_height.text())
+            htt = int(self.receiver_height.text())
+
+            self.graphics_view.clear()
 
             # Okumura Hata Model
             CH = 0.8 + (1.1 * ((np.log10(int(f))) - 0.7)) * (int(htt)) - (1.56 * (np.log10(int(f))))
-            pathLoss = 69.55 + 26.16 * (np.log10(int(f))) - 13.82 * (np.log10(int(htr))) - CH + (
+            pathLoss_small = 69.55 + 26.16 * (np.log10(int(f))) - 13.82 * (np.log10(int(htr))) - CH + (
                     44.9 - 6.55 * (np.log10(int(htr)))) * (np.log10(distance_space))
 
-            distance_space *= 1000
+            pen = pyqtgraph.mkPen(color=(255, 0, 0))
 
-            self.graphics_view.clear()
-            self.graphics_view.setTitle(f"Path loss : {str(round(pathLoss[-1], 2))} dB")
-            self.graphics_view.plot(distance_space, pathLoss)
+            if 150 <= f <= 200:
+                # Okumura Hata Model
+                CH = 8.29 * (np.power(np.log10(1.54 * int(htt)), 2)) - 1.1
+                pathLoss = 69.55 + 26.16 * (np.log10(int(f))) - 13.82 * (np.log10(int(htr))) - CH + (
+                        44.9 - 6.55 * (np.log10(int(htr)))) * (np.log10(distance_space))
+
+                distance_space *= 1000
+
+                self.graphics_view.setTitle(
+                    f"(Black)Large City PL:{str(round(pathLoss[-1], 2))} dB | (Red)Small City PL: "
+                    f"{str(round(pathLoss_small[-1], 2))} dB")
+                self.graphics_view.plot(distance_space, pathLoss_small, pen=pen)
+                self.graphics_view.plot(distance_space, pathLoss)
+            elif 200 < f <= 1500:
+                # Okumura Hata Model
+                CH = 3.2 * (np.power(np.log10(11.75 * int(htt)), 2)) - 4.97
+                pathLoss = 69.55 + 26.16 * (np.log10(int(f))) - 13.82 * (np.log10(int(htr))) - CH + (
+                        44.9 - 6.55 * (np.log10(int(htr)))) * (np.log10(distance_space))
+
+                distance_space *= 1000
+                self.graphics_view.setTitle(
+                    f"(Black)Large City PL: {str(round(pathLoss[-1], 2))} dB | (Red)Small City PL: "
+                    f"{str(round(pathLoss_small[-1], 2))} dB")
+                self.graphics_view.plot(distance_space, pathLoss_small, pen=pen)
+                self.graphics_view.plot(distance_space, pathLoss)
+            else:
+                distance_space *= 1000
+                self.graphics_view.setTitle(
+                    f"Small/Medium-Sized City Path Loss : {str(round(pathLoss_small[-1], 2))} dB")
+                self.graphics_view.plot(distance_space, pathLoss_small)
+
         # SubUrban
         elif self.suburb_rb.isChecked():
             # Frequency in HZ
@@ -625,8 +658,8 @@ class Ui_App(object):
 
             distance_space = np.arange(1, int(d) + 1)
 
-            htr = float(self.transmitter_height.text())
-            htt = float(self.receiver_height.text())
+            htr = int(self.transmitter_height.text())
+            htt = int(self.receiver_height.text())
 
             CH = 0.8 + (1.1 * ((np.log10(int(f))) - 0.7)) * (int(htt)) - (1.56 * (np.log10(int(f))))
             LSU = 2 * (((np.log10(int(f))) / 28) ** 2) - 5.4
@@ -649,8 +682,8 @@ class Ui_App(object):
 
             distance_space = np.arange(1, int(d) + 1)
 
-            htr = float(self.transmitter_height.text())
-            htt = float(self.receiver_height.text())
+            htr = int(self.transmitter_height.text())
+            htt = int(self.receiver_height.text())
 
             CH = 0.8 + (1.1 * ((np.log10(int(f))) - 0.7)) * (int(htt)) - (1.56 * (np.log10(int(f))))
             pathLoss = 69.55 + 26.16 * (np.log10(int(f))) - 13.82 * (np.log10(int(htr))) - CH + (
@@ -675,14 +708,14 @@ class Ui_App(object):
 
             distance_space = np.arange(1, int(d) + 1)
 
-            htr = float(self.transmitter_height.text())
-            htt = float(self.receiver_height.text())
+            htr = int(self.transmitter_height.text())
+            htt = int(self.receiver_height.text())
 
             Asf = 92.4 + 20 * np.log10(distance_space) + 20 * np.log10(int(f))
             Amb = 20.41 + 9.83 * np.log10(distance_space) + 7.894 * np.log10(int(f)) + 9.56 * \
                   np.power(np.log10(int(f)), 2)
             Gd = np.log10(htr / 200) * (13.958 + 5.8 * np.power(np.log10(distance_space), 2))
-            Gs = (42.57 + 13.7 * (np.log10(int(f)))) * (np.log10(htr) - 0.585)
+            Gs = (42.57 + 13.7 * (np.log10(int(f)))) * (np.log10(htt) - 0.585)
 
             pathLoss = Asf + Amb - Gd - Gs
 
@@ -702,14 +735,14 @@ class Ui_App(object):
 
             distance_space = np.arange(1, int(d) + 1)
 
-            htr = float(self.transmitter_height.text())
-            htt = float(self.receiver_height.text())
+            htr = int(self.transmitter_height.text())
+            htt = int(self.receiver_height.text())
 
             Asf = 92.4 + 20 * np.log10(distance_space) + 20 * np.log10(int(f))
             Amb = 20.41 + 9.83 * np.log10(distance_space) + 7.894 * np.log10(int(f)) + 9.56 * \
                   np.power(np.log10(int(f)), 2)
             Gd = np.log10(htr / 200) * (13.958 + 5.8 * np.power(np.log10(distance_space), 2))
-            Gs = 0.759 * htr - 1.862
+            Gs = 0.759 * htt - 1.862
 
             pathLoss = Asf + Amb - Gd - Gs
 
@@ -723,12 +756,90 @@ class Ui_App(object):
 
     def cost_231_outdoor_model(self) -> None:
         print("Cost 231 Outdoor Model Calculation")
+        # Frequency in HZ
+        f: float = float(self.frequency_outdoor.text())
+        # Max Distance in meters
+        d: float = float(self.distance_max_meter.text())
+
+        distance_space = np.arange(1, int(d) + 1)
+
+        htr = int(self.transmitter_height.text())
+        htt = int(self.receiver_height.text())
+
+        if self.med_city_rb.isChecked() or self.suburb_rb.isChecked():
+            Cc = 0
+            ahtt = (1.1 * np.log10(int(f)) - 0.7) * htt - (1.56 * np.log10(int(f)) - 0.8)
+            pathLoss = 46.3 + 33.9 * np.log10(int(f)) - 13.28 * np.log10(int(htr)) - ahtt + 44.9 - 6.55 * np.log10(
+                htr) + np.log10(distance_space) + Cc
+        else:
+            Cc = 3
+            ahtt = 3.2 * np.power(np.log10(11.75 * htt), 2) - 4.97
+            pathLoss = 46.3 + 33.9 * np.log10(int(f)) - 13.28 * np.log10(int(htr)) - ahtt + 44.9 - 6.55 * np.log10(
+                htr) + np.log10(distance_space) + Cc
+
+        pathLoss_Str = str(round(pathLoss[-1], 2))
+        distance_space *= 1000
+
+        self.graphics_view.clear()
+        self.graphics_view.setTitle(f"Path loss : {pathLoss_Str} dB")
+        self.graphics_view.plot(distance_space, pathLoss)
 
     def two_ray_outdoor_model(self) -> None:
         print("Two-Ray Outdoor Model Calculation")
+        # Max Distance in meters
+        d: float = float(self.distance_max_meter.text())
 
-    def ericsson_outdoor_mode(self) -> None:
+        distance_space = np.arange(1, int(d) + 1)
+
+        htt = int(self.receiver_height.text())
+        ghtr = int(self.transmitter_gain_value.text())
+
+        pathLoss = 40 * np.log10(distance_space) - 10 * np.log10(np.power(ghtr, 2) * np.power(htt, 2))
+
+        pathLoss_Str = str(round(pathLoss[-1], 2))
+
+        distance_space *= 1000
+
+        self.graphics_view.clear()
+        self.graphics_view.setTitle(f"Path loss : {pathLoss_Str} dB")
+        self.graphics_view.plot(distance_space, pathLoss)
+
+    def ericsson_outdoor_model(self) -> None:
         print("Ericsson Outdoor Model Calculation")
+        # Frequency in HZ
+        f: float = float(self.frequency_outdoor.text())
+        # Max Distance in meters
+        d: float = float(self.distance_max_meter.text())
+        htr = int(self.transmitter_height.text())
+        gf = 44.49 * np.power(np.log10(int(f)) - 4.78 * np.log10(int(f)), 2)
+
+        distance_space = np.arange(1, int(d) + 1)
+
+        if self.urban_rb.isChecked():
+            a = [36.2, 30.2, 12, 0.1]
+
+            pathLoss = a[0] + a[1] * np.log10(distance_space) + a[2] * np.log10(htr) + a[3] * (np.log10(htr) * np.log10(
+                distance_space)) - 3.2 * np.power(np.log10(11.75 * htr), 2) + gf
+        elif self.suburb_rb.isChecked():
+            a = [43.20, 68.93, 12, 0.1]
+
+            pathLoss = a[0] + a[1] * np.log10(distance_space) + a[2] * np.log10(htr) + a[3] * (np.log10(htr) * np.log10(
+                distance_space)) - 3.2 * np.power(np.log10(11.75 * htr), 2) + gf
+            pass
+        elif self.village_rb.isChecked():
+            a = [45.95, 100.6, 12, 0.1]
+
+            pathLoss = a[0] + a[1] * np.log10(distance_space) + a[2] * np.log10(htr) + a[3] * (np.log10(htr) * np.log10(
+                distance_space)) - 3.2 * np.power(np.log10(11.75 * htr), 2) + gf
+            pass
+
+        pathLoss_Str = str(round(pathLoss[-1], 2))
+ 
+        distance_space *= 1000
+
+        self.graphics_view.clear()
+        self.graphics_view.setTitle(f"Path loss : {pathLoss_Str} dB")
+        self.graphics_view.plot(distance_space, pathLoss)
 
     def de_selection(self) -> None:
         if self.free_space_rb.isChecked():
@@ -799,5 +910,40 @@ class Ui_App(object):
             self.med_city_rb.setEnabled(True)
             self.suburb_rb.setEnabled(True)
             self.village_rb.setDisabled(True)
+            self.open_area_rb.setDisabled(True)
+            self.no_option_rb.setDisabled(True)
+
+        elif self.two_ray_rb_2.isChecked():
+            # Text Values
+            self.transmitter_gain_value.setEnabled(True)
+            self.frequency_outdoor.setDisabled(True)
+            self.loss_exp_value.setDisabled(True)
+            self.transmitter_height.setDisabled(True)
+            self.receiver_height.setEnabled(True)
+            self.max_distance_value.setDisabled(True)
+            # Radio Buttons
+            self.metro_rb.setDisabled(True)
+            self.urban_rb.setDisabled(True)
+            self.med_city_rb.setDisabled(True)
+            self.suburb_rb.setDisabled(True)
+            self.village_rb.setDisabled(True)
+            self.open_area_rb.setDisabled(True)
+            self.no_option_rb.setDisabled(True)
+
+        elif self.ericsson_rb.isChecked():
+            # Text Values
+            self.transmitter_gain_value.setDisabled(True)
+            self.frequency_outdoor.setEnabled(True)
+            self.loss_exp_value.setDisabled(True)
+            self.transmitter_height.setEnabled(True)
+            self.receiver_height.setDisabled(True)
+            self.max_distance_value.setEnabled(True)
+            # Radio Buttons
+            self.metro_rb.setDisabled(True)
+            self.urban_rb.setEnabled(True)
+            self.urban_rb.setChecked(True)
+            self.med_city_rb.setDisabled(True)
+            self.suburb_rb.setEnabled(True)
+            self.village_rb.setEnabled(True)
             self.open_area_rb.setDisabled(True)
             self.no_option_rb.setDisabled(True)
