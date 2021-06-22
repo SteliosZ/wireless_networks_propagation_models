@@ -377,6 +377,8 @@ class Ui_App(object):
         self.path_loss_exp_value.addItem("")
         self.path_loss_exp_value.addItem("")
         self.path_loss_exp_value.addItem("")
+        self.path_loss_exp_value.addItem("")
+        self.path_loss_exp_value.addItem("")
         self.gridLayout.addWidget(self.path_loss_exp_value, 5, 1, 1, 1)
         self.tabs_area.addTab(self.indoor_models, "")
         App.setCentralWidget(self.centralwidget)
@@ -495,9 +497,11 @@ class Ui_App(object):
         self.path_loss_exp_value.setItemText(2, _translate("App", "Grocery Store"))
         self.path_loss_exp_value.setItemText(3, _translate("App", "Office"))
         self.path_loss_exp_value.setItemText(4, _translate("App", "Office with Hard Partition"))
-        self.path_loss_exp_value.setItemText(5, _translate("App", "Office with Soft Partition"))
-        self.path_loss_exp_value.setItemText(6, _translate("App", "Textile or Chemical"))
-        self.path_loss_exp_value.setItemText(7, _translate("App", "Commercial"))
+        self.path_loss_exp_value.setItemText(5, _translate("App", "Office with Soft Partition 900MHz"))
+        self.path_loss_exp_value.setItemText(6, _translate("App", "Office with Soft Partition 1.9GHz"))
+        self.path_loss_exp_value.setItemText(7, _translate("App", "Textile or Chemical 1.3GHz"))
+        self.path_loss_exp_value.setItemText(8, _translate("App", "Textile or Chemical 4GHz"))
+        self.path_loss_exp_value.setItemText(9, _translate("App", "Commercial"))
         self.tabs_area.setTabText(self.tabs_area.indexOf(self.indoor_models), _translate("App", "Indoor Models"))
         self.menuFile.setTitle(_translate("App", "File"))
         self.menuHelp.setTitle(_translate("App", "Help"))
@@ -509,4 +513,6 @@ class Ui_App(object):
         self.actionFree_Space.setText(_translate("App", "Free Space"))
         self.actionAbout.setText(_translate("App", "About"))
         self.actionHelp.setText(_translate("App", "Info (PDF)"))
+
+
 from pyqtgraph import PlotWidget

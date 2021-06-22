@@ -45,7 +45,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <property name="movable">
      <bool>false</bool>
@@ -1254,12 +1254,22 @@
          </item>
          <item>
           <property name="text">
-           <string>Office with Soft Partition</string>
+           <string>Office with Soft Partition 900MHz</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>Textile or Chemical</string>
+           <string>Office with Soft Partition 1.9GHz</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Textile or Chemical 1.3GHz</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Textile or Chemical 4GHz</string>
           </property>
          </item>
          <item>

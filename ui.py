@@ -10,9 +10,11 @@
 # TODO : Add a dictionary with every Widget/Button etc. that will be unchecked/unavailable for certain options
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtWidgets import QMessageBox
 from pyqtgraph import PlotWidget
 import pyqtgraph
 import numpy as np
+import subprocess
 
 
 class Ui_App(object):
@@ -381,6 +383,8 @@ class Ui_App(object):
         self.path_loss_exp_value.addItem("")
         self.path_loss_exp_value.addItem("")
         self.path_loss_exp_value.addItem("")
+        self.path_loss_exp_value.addItem("")
+        self.path_loss_exp_value.addItem("")
         self.gridLayout.addWidget(self.path_loss_exp_value, 5, 1, 1, 1)
         self.tabs_area.addTab(self.indoor_models, "")
         App.setCentralWidget(self.centralwidget)
@@ -424,7 +428,7 @@ class Ui_App(object):
         QtCore.QMetaObject.connectSlotsByName(App)
 
         # DEFAULT VALUES
-        # ------------ INDOOR ------------
+        # ------------ OUTDOOR ------------
         # Text Values
         self.frequency_outdoor.setEnabled(True)
         self.loss_exp_value.setDisabled(True)
@@ -440,16 +444,17 @@ class Ui_App(object):
         self.suburb_rb.setDisabled(True)
         self.village_rb.setDisabled(True)
         self.open_area_rb.setDisabled(True)
-        # ------------ OUTDOOR ------------
+        # ------------ INDOOR ------------
         # Text Values
         self.frequency_indoor.setEnabled(True)
         self.max_distance_value.setEnabled(True)
-        self.reference_distance_value.setEnabled(True)
+        self.reference_distance_value.setDisabled(True)
         self.power_loss_value.setEnabled(True)
-        self.path_loss_exp_value.setEnabled(True)
+        self.power_loss_value.setCurrentIndex(3)
+        self.path_loss_exp_value.setDisabled(True)
         self.floor_loss_factor_value.setEnabled(True)
-        self.floor_number.setDisabled(True)
-        self.area_value.setDisabled(True)
+        self.floor_number.setEnabled(True)
+        self.area_value.setEnabled(True)
         # Radio Buttons
         self.itu_rb.setEnabled(True)
         self.log_distance_rb.setEnabled(True)
@@ -478,6 +483,16 @@ class Ui_App(object):
         self.two_ray_rb_2.clicked.connect(self.de_selection)
         self.ericsson_rb.clicked.connect(self.de_selection)
         # Radio Button Events --- INDOOR
+        self.log_distance_rb.clicked.connect(self.de_selection)
+        self.itu_rb.clicked.connect(self.de_selection)
+        # Top Menu Actions
+        self.actionHelp.triggered.connect(self.open_pdf)
+        self.actionAbout.triggered.connect(self.dialog_menu)
+        self.export_pdf_button.triggered.connect(self.export_report)
+
+        # Utils
+        self.path_loss_exp_value.currentIndexChanged.connect(self.checkFrequency)
+        self.area_value.currentIndexChanged.connect(self.check_itu_area)
 
     def retranslateUi(self, App):
         _translate = QtCore.QCoreApplication.translate
@@ -555,9 +570,11 @@ class Ui_App(object):
         self.path_loss_exp_value.setItemText(2, _translate("App", "Grocery Store"))
         self.path_loss_exp_value.setItemText(3, _translate("App", "Office"))
         self.path_loss_exp_value.setItemText(4, _translate("App", "Office with Hard Partition"))
-        self.path_loss_exp_value.setItemText(5, _translate("App", "Office with Soft Partition"))
-        self.path_loss_exp_value.setItemText(6, _translate("App", "Textile or Chemical"))
-        self.path_loss_exp_value.setItemText(7, _translate("App", "Commercial"))
+        self.path_loss_exp_value.setItemText(5, _translate("App", "Office with Soft Partition 900MHz"))
+        self.path_loss_exp_value.setItemText(6, _translate("App", "Office with Soft Partition 1.9GHz"))
+        self.path_loss_exp_value.setItemText(7, _translate("App", "Textile or Chemical 1.3GHz"))
+        self.path_loss_exp_value.setItemText(8, _translate("App", "Textile or Chemical 4GHz"))
+        self.path_loss_exp_value.setItemText(9, _translate("App", "Commercial"))
         self.tabs_area.setTabText(self.tabs_area.indexOf(self.indoor_models), _translate("App", "Indoor Models"))
         self.menuFile.setTitle(_translate("App", "File"))
         self.menuHelp.setTitle(_translate("App", "Help"))
@@ -962,19 +979,165 @@ class Ui_App(object):
             self.open_area_rb.setDisabled(True)
             self.no_option_rb.setDisabled(True)
 
+        if self.log_distance_rb.isChecked():
+            # Text Values
+            self.frequency_indoor.setEnabled(True)
+            self.max_distance_value.setEnabled(True)
+            self.reference_distance_value.setEnabled(True)
+            self.power_loss_value.setDisabled(True)
+            self.path_loss_exp_value.setEnabled(True)
+            self.floor_loss_factor_value.setDisabled(True)
+            self.floor_number.setDisabled(True)
+            self.area_value.setDisabled(True)
+            # Radio Buttons
+            self.itu_rb.setEnabled(True)
+            self.log_distance_rb.setEnabled(True)
+            self.no_fading_rb.setEnabled(True)
+            self.no_fading_rb.setChecked(True)
+            self.slow_fading_rb.setEnabled(True)
+            self.fast_fading_rb.setEnabled(True)
+        elif self.itu_rb.isChecked():
+            # Text Values
+            self.frequency_indoor.setEnabled(True)
+            self.max_distance_value.setEnabled(True)
+            self.reference_distance_value.setDisabled(True)
+            self.power_loss_value.setEnabled(True)
+            self.path_loss_exp_value.setDisabled(True)
+            self.floor_loss_factor_value.setEnabled(True)
+            self.floor_number.setEnabled(True)
+            self.area_value.setEnabled(True)
+            # Radio Buttons
+            self.itu_rb.setEnabled(True)
+            self.log_distance_rb.setEnabled(True)
+            self.no_fading_rb.setDisabled(True)
+            self.slow_fading_rb.setDisabled(True)
+            self.fast_fading_rb.setDisabled(True)
+            # MSG
+            self.graphics_view_2.clear()
+            self.graphics_view_2.setTitle(f"Please refer to the documentation for proper calculations")
+
+    def checkFrequency(self):
+        if self.path_loss_exp_value.currentText() == 'Infinite Space':
+            self.frequency_indoor.setEnabled(True)
+        else:
+            self.frequency_indoor.setDisabled(True)
+
+    def check_itu_area(self):
+        if self.area_value.currentText() == 'Residential' and 1800000.0 <= float(
+                self.frequency_indoor.text()) <= 2000000.0:
+            self.power_loss_value.setCurrentIndex(3)
+        elif self.area_value.currentText() == 'Residential' and float(self.frequency_indoor.text()) == 5200000.0:
+            self.power_loss_value.setCurrentIndex(2)
+        elif self.area_value.currentText() == 'Office':
+            print(self.area_value.currentText())
+        elif self.area_value.currentText() == 'Commercial':
+            print(self.area_value.currentText())
+
     def itu_indoor_model(self):
         print("ITU Indoor Model Calculation")
-        pass
-
-    def log_distance_indoor_model(self):
-        # Frequency in HZ
         f: float = float(self.frequency_indoor.text())
-        # Max Distance in meters
-        d: float = float(self.max_distance_value.text())
-        n = [2.0, 2.2, 1.8, 3.0, 2.4, 2.6, 2.0, 2.1, 2.2, 1.7]
-        frequency_of_transmission = [914, 914, 1500, 900, 1900, 1300, 4000, 60000, 60000]
-        xs = 2
+        N: int = int(self.power_loss_value.currentText())
+        d = int(self.max_distance_value.text())
+
         distance_space = np.arange(1, int(d) + 1)
 
-        free_space_path_loss = 20 * (np.log10(distance_space)) + 20 * (np.log10(int(f))) + 32.34
-        pathLoss = free_space_path_loss + 10 * n * np.log10(d / d0) + Xs
+        if self.floor_number.text() == '1' and self.area_value.currentText() == 'Office' and float(
+                self.frequency_indoor.text()) == 900000.0:
+            pfn = 9
+        elif self.floor_number.text() == '2' and self.area_value.currentText() == 'Office' and float(
+                self.frequency_indoor.text()) == 900000.0:
+            pfn = 19
+        elif self.floor_number.text() == '3' and self.area_value.currentText() == 'Office' and float(
+                self.frequency_indoor.text()) == 900000.0:
+            pfn = 24
+        elif self.floor_number.text() == '1' and self.area_value.currentText() == 'Office' and float(
+                self.frequency_indoor.text()) == 5200000.0:
+            pfn = 16
+        elif self.floor_number.text() == '1' and self.area_value.currentText() == 'Office' and float(
+                self.frequency_indoor.text()) == 5800000.0:
+            pfn = 22
+        elif self.floor_number.text() == '2' and self.area_value.currentText() == 'Office' and float(
+                self.frequency_indoor.text()) == 5800000.0:
+            pfn = 28
+        elif 1800000.0 <= float(
+                self.frequency_indoor.text()) <= 2000000.0 and self.area_value.currentText() == 'Residential':
+            pfn = int(self.floor_number.text()) * 4
+        elif 1800000.0 <= float(
+                self.frequency_indoor.text()) <= 2000000.0 and self.area_value.currentText() == 'Office':
+            pfn = 15 + 4 * (int(self.floor_number.text()) - 1)
+        elif 1800000.0 <= float(
+                self.frequency_indoor.text()) <= 2000000.0 and self.area_value.currentText() == 'Commercial':
+            pfn = 6 + 3 * (int(self.floor_number.text()) - 1)
+        else:
+            pfn = 0
+
+        pathLoss = 20 * np.log10(int(f)) + N * np.log10(distance_space) + pfn - 28
+
+        pathLoss_Str = str(round(pathLoss[-1], 2))
+
+        distance_space *= 1000
+
+        self.graphics_view_2.clear()
+        self.graphics_view_2.setTitle(f"Path loss : {pathLoss_Str} dB")
+        self.graphics_view_2.plot(distance_space, pathLoss)
+
+    def log_distance_indoor_model(self):
+        # print("Free Space Outdoor Model Calculation")
+        d: float = float(self.max_distance_value.text())
+        d0: float = float(self.reference_distance_value.text())
+        path_loss_exponent: dict = {
+            'Retail Store': [2.2, 914000.0],
+            'Grocery Store': [1.8, 914000.0],
+            'Office': [2.2, 60000000.0],
+            'Office with Soft Partition 900MHz': [2.4, 900000.0],
+            'Office with Soft Partition 1.9GHz': [2.6, 1900000.0],
+            'Office with Hard Partition ': [3.0, 1500000.0],
+            'Textile or Chemical 1.3GHz': [2.0, 1300000.0],
+            'Textile or Chemical 4GHz': [2.1, 4000000.0],
+            'Commercial': [1.7, 60000000.0],
+        }
+        distance_space = np.arange(1, int(d) + 1)
+        distance_space_d0 = np.arange(1, int(d0) + 1)
+
+        if self.path_loss_exp_value.currentText() in path_loss_exponent.keys():
+            free_space_pathLoss = 20 * (np.log10(distance_space_d0)) + 20 * (
+                np.log10(int(path_loss_exponent[self.path_loss_exp_value.currentText()][1]))) + 32.34
+            pathLoss = free_space_pathLoss + 10 * path_loss_exponent[self.path_loss_exp_value.currentText()][
+                0] * np.log10(d / d0)
+        else:
+            f: float = float(self.frequency_indoor.text())
+            free_space_pathLoss = 20 * (np.log10(distance_space_d0)) + 20 * (
+                np.log10(int(f))) + 32.34
+
+            pathLoss = free_space_pathLoss + 10 * 2.0 * np.log10(d / d0)
+
+        if self.no_fading_rb.isChecked():
+            pass
+        else:
+            mu, sigma = 0, 0.1  # mean and standard deviation
+            s = np.random.normal(mu, sigma, 1000)
+            pathLoss = pathLoss + s
+
+        pathLoss_Str = str(round(pathLoss[-1], 2))
+
+        distance_space_d0 *= 1000
+
+        self.graphics_view_2.clear()
+        self.graphics_view_2.setTitle(f"Path loss : {pathLoss_Str} dB")
+        self.graphics_view_2.plot(distance_space_d0, pathLoss)
+
+    @staticmethod
+    def dialog_menu():
+        msg = QMessageBox()
+        msg.setWindowTitle("About")
+        msg.setText(
+            "Stylianos Klados\nDimitra Papatsaroucha\nIraklis Skepasianos\nNikolaos Astyrakakis\nTerm Project @2021")
+
+        x = msg.exec_()
+
+    @staticmethod
+    def open_pdf():
+        subprocess.Popen([r'.\help.pdf'], shell=True)
+
+    def export_report(self):
+        pass
