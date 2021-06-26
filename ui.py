@@ -33,13 +33,6 @@ class PDF(FPDF):
         self.cell(60, 1, 'Path Loss - Report', 0, 0, 'R')
         self.ln(20)
 
-    # def footer(self):
-    #     # Page numbers in the footer
-    #     self.set_y(-15)
-    #     self.set_font('Arial', 'I', 8)
-    #     self.set_text_color(128)
-    #     self.cell(0, 10, 'Page ' + str(self.page_no()), 0, 0, 'C')
-
     def page_body(self, images):
         # Determine how many plots there are per page and set positions
         # and margins accordingly
@@ -55,8 +48,11 @@ class Ui_App(object):
     def __init__(self):
         # Current Values for plot export
         self.current_pathLoss = None
+        self.current_pathLoss_2 = None
         self.current_distance = None
         self.current_pathLossStr = None
+        self.current_pathLossStr_2 = None
+        self.current_button_pressed = None
 
     def setupUi(self, App):
         App.setObjectName("App")
@@ -661,9 +657,18 @@ class Ui_App(object):
 
         distance_space *= 1000
 
+        pathLossStr = str(round(pathLoss[-1], 2))
+
         self.graphics_view.clear()
-        self.graphics_view.setTitle(f"Path loss : {str(round(pathLoss[-1], 2))} dB")
+        self.graphics_view.setTitle(f"Path loss : {pathLossStr} dB")
         self.graphics_view.plot(distance_space, pathLoss)
+
+        self.current_pathLossStr = pathLossStr
+        self.current_pathLossStr_2 = None
+        self.current_distance = distance_space
+        self.current_pathLoss = pathLoss
+        self.current_pathLoss_2 = None
+        self.current_button_pressed = 1
 
     def okumura_hata_outdoor_model(self) -> None:
         # print("Okumura Hata Outdoor Model Calculation")
@@ -696,12 +701,23 @@ class Ui_App(object):
                         44.9 - 6.55 * (np.log10(int(htr)))) * (np.log10(distance_space))
 
                 distance_space *= 1000
+                pathLossStr = str(round(pathLoss[-1], 2))
+                pathLossStr_small = str(round(pathLoss_small[-1], 2))
 
                 self.graphics_view.setTitle(
-                    f"(Black)Large City PL:{str(round(pathLoss[-1], 2))} dB | (Red)Small City PL: "
-                    f"{str(round(pathLoss_small[-1], 2))} dB")
+                    f"(Black)Large City PL:{pathLossStr} dB | (Red)Small City PL: "
+                    f"{pathLossStr_small} dB")
+
                 self.graphics_view.plot(distance_space, pathLoss_small, pen=pen)
                 self.graphics_view.plot(distance_space, pathLoss)
+
+                self.current_pathLossStr = pathLossStr
+                self.current_pathLossStr_2 = pathLossStr_small
+                self.current_distance = distance_space
+                self.current_pathLoss = pathLoss
+                self.current_pathLoss_2 = pathLossStr_small
+                self.current_button_pressed = 1
+
             elif 200 < f <= 1500:
                 # Okumura Hata Model
                 CH = 3.2 * (np.power(np.log10(11.75 * int(htt)), 2)) - 4.97
@@ -709,16 +725,37 @@ class Ui_App(object):
                         44.9 - 6.55 * (np.log10(int(htr)))) * (np.log10(distance_space))
 
                 distance_space *= 1000
+
+                pathLossStr = str(round(pathLoss[-1], 2))
+                pathLossStr_small = str(round(pathLoss_small[-1], 2))
+
                 self.graphics_view.setTitle(
-                    f"(Black)Large City PL: {str(round(pathLoss[-1], 2))} dB | (Red)Small City PL: "
-                    f"{str(round(pathLoss_small[-1], 2))} dB")
+                    f"(Black)Large City PL: {pathLossStr} dB | (Red)Small City PL: "
+                    f"{pathLossStr_small} dB")
                 self.graphics_view.plot(distance_space, pathLoss_small, pen=pen)
                 self.graphics_view.plot(distance_space, pathLoss)
+
+                self.current_pathLossStr = pathLossStr
+                self.current_pathLossStr_2 = pathLossStr_small
+                self.current_distance = distance_space
+                self.current_pathLoss = pathLoss
+                self.current_pathLoss_2 = pathLoss_small
+                self.current_button_pressed = 1
+
             else:
                 distance_space *= 1000
+                pathLossStr_small = str(round(pathLoss_small[-1], 2))
+
                 self.graphics_view.setTitle(
-                    f"Small/Medium-Sized City Path Loss : {str(round(pathLoss_small[-1], 2))} dB")
+                    f"Small/Medium-Sized City Path Loss : {pathLossStr_small} dB")
                 self.graphics_view.plot(distance_space, pathLoss_small)
+
+                self.current_pathLossStr = None
+                self.current_pathLossStr_2 = pathLossStr_small
+                self.current_distance = distance_space
+                self.current_pathLoss = None
+                self.current_pathLoss_2 = pathLoss_small
+                self.current_button_pressed = 1
 
         # SubUrban
         elif self.suburb_rb.isChecked():
@@ -744,6 +781,13 @@ class Ui_App(object):
             self.graphics_view.clear()
             self.graphics_view.setTitle(f"Path loss : {pathLoss_Str} dB")
             self.graphics_view.plot(distance_space, pathLoss)
+
+            self.current_pathLossStr = pathLoss_Str
+            self.current_pathLossStr_2 = None
+            self.current_distance = distance_space
+            self.current_pathLoss = pathLoss
+            self.current_pathLoss_2 = None
+            self.current_button_pressed = 1
         # Open
         elif self.open_area_rb.isChecked():
             # Frequency in HZ
@@ -768,6 +812,13 @@ class Ui_App(object):
             self.graphics_view.clear()
             self.graphics_view.setTitle(f"Path loss : {pathLoss_Str} dB")
             self.graphics_view.plot(distance_space, pathLoss)
+
+            self.current_pathLossStr = pathLoss_Str
+            self.current_pathLossStr_2 = None
+            self.current_distance = distance_space
+            self.current_pathLoss = pathLoss
+            self.current_pathLoss_2 = None
+            self.current_button_pressed = 1
 
     def ecc_33_outdoor_model(self) -> None:
         # print("ECC 33 Outdoor Model Calculation")
@@ -798,6 +849,13 @@ class Ui_App(object):
             self.graphics_view.setTitle(f"Path loss : {pathLoss_Str} dB")
             self.graphics_view.plot(distance_space, pathLoss)
 
+            self.current_pathLossStr = pathLoss_Str
+            self.current_pathLossStr_2 = None
+            self.current_distance = distance_space
+            self.current_pathLoss = pathLoss
+            self.current_pathLoss_2 = None
+            self.current_button_pressed = 1
+
         elif self.urban_rb.isChecked():
             # Frequency in HZ
             f: float = float(self.frequency_outdoor.text())
@@ -824,6 +882,13 @@ class Ui_App(object):
             self.graphics_view.clear()
             self.graphics_view.setTitle(f"Path loss : {pathLoss_Str} dB")
             self.graphics_view.plot(distance_space, pathLoss)
+
+            self.current_pathLossStr = pathLoss_Str
+            self.current_pathLossStr_2 = None
+            self.current_distance = distance_space
+            self.current_pathLoss = pathLoss
+            self.current_pathLoss_2 = None
+            self.current_button_pressed = 1
 
     def cost_231_outdoor_model(self) -> None:
         # print("Cost 231 Outdoor Model Calculation")
@@ -855,6 +920,13 @@ class Ui_App(object):
         self.graphics_view.setTitle(f"Path loss : {pathLoss_Str} dB")
         self.graphics_view.plot(distance_space, pathLoss)
 
+        self.current_pathLossStr = pathLoss_Str
+        self.current_pathLossStr_2 = None
+        self.current_distance = distance_space
+        self.current_pathLoss = pathLoss
+        self.current_pathLoss_2 = None
+        self.current_button_pressed = 1
+
     def two_ray_outdoor_model(self) -> None:
         # print("Two-Ray Outdoor Model Calculation")
         # Max Distance in meters
@@ -874,6 +946,13 @@ class Ui_App(object):
         self.graphics_view.clear()
         self.graphics_view.setTitle(f"Path loss : {pathLoss_Str} dB")
         self.graphics_view.plot(distance_space, pathLoss)
+
+        self.current_pathLossStr = pathLoss_Str
+        self.current_pathLossStr_2 = None
+        self.current_distance = distance_space
+        self.current_pathLoss = pathLoss
+        self.current_pathLoss_2 = None
+        self.current_button_pressed = 1
 
     def ericsson_outdoor_model(self) -> None:
         # print("Ericsson Outdoor Model Calculation")
@@ -912,7 +991,17 @@ class Ui_App(object):
         self.graphics_view.setTitle(f"Path loss : {pathLoss_Str} dB")
         self.graphics_view.plot(distance_space, pathLoss)
 
+        self.current_pathLossStr = pathLoss_Str
+        self.current_pathLossStr_2 = None
+        self.current_distance = distance_space
+        self.current_pathLoss = pathLoss
+        self.current_pathLoss_2 = None
+        self.current_button_pressed = 1
+
     def de_selection(self) -> None:
+        self.current_pathLoss = None
+        self.current_distance = None
+
         if self.free_space_rb.isChecked():
             # Text Values
             self.transmitter_gain_value.setDisabled(True)
@@ -1074,7 +1163,7 @@ class Ui_App(object):
             print(self.area_value.currentText())
 
     def itu_indoor_model(self):
-        print("ITU Indoor Model Calculation")
+        # print("ITU Indoor Model Calculation")
         f: float = float(self.frequency_indoor.text())
         N: int = int(self.power_loss_value.currentText())
         d = int(self.max_distance_value.text())
@@ -1121,6 +1210,13 @@ class Ui_App(object):
         self.graphics_view_2.setTitle(f"Path loss : {pathLoss_Str} dB")
         self.graphics_view_2.plot(distance_space, pathLoss)
 
+        self.current_pathLossStr = pathLoss_Str
+        self.current_pathLossStr_2 = None
+        self.current_distance = distance_space
+        self.current_pathLoss = pathLoss
+        self.current_pathLoss_2 = None
+        self.current_button_pressed = 2
+
     def log_distance_indoor_model(self):
         # print("Free Space Outdoor Model Calculation")
         d: float = float(self.max_distance_value.text())
@@ -1165,10 +1261,12 @@ class Ui_App(object):
         self.graphics_view_2.setTitle(f"Path loss : {pathLoss_Str} dB")
         self.graphics_view_2.plot(distance_space_d0, pathLoss)
 
-        self.current_distance = distance_space_d0
-        self.current_pathLoss = pathLoss
         self.current_pathLossStr = pathLoss_Str
-        self.export_report('log_distance_path_loss.pdf')
+        self.current_pathLossStr_2 = None
+        self.current_distance = distance_space
+        self.current_pathLoss = pathLoss
+        self.current_pathLoss_2 = None
+        self.current_button_pressed = 2
 
     @staticmethod
     def dialog_menu():
@@ -1183,30 +1281,62 @@ class Ui_App(object):
     def open_pdf():
         subprocess.Popen([r'.\help.pdf'], shell=True)
 
-    def export_report(self, theory_pdf):
-        plt.figure(figsize=(12, 4))
-        plt.grid(color='#F2F2F2', alpha=1, zorder=0)
-        plt.plot(self.current_distance, self.current_pathLoss, color='#087E8B', lw=3, zorder=5)
-        plt.title(f"Path loss : {self.current_pathLossStr} dB", fontsize=17)
-        plt.xlabel('Distance (m)', fontsize=13)
-        plt.xticks(fontsize=9)
-        plt.ylabel('Path Loss (dB)', fontsize=13)
-        plt.yticks(fontsize=9)
-        plt.savefig('.\\output_imgs\\result.png', dpi=300, bbox_inches='tight', pad_inches=0)
-        plt.close()
+    def export_report(self, theory_pdf=None):
+        if self.current_distance is not None or self.current_pathLoss is not None:
+            if self.current_button_pressed == 1:
+                if self.free_space_rb.isChecked():
+                    theory_pdf = 'free_space_propagation_model_theory.pdf'
+                elif self.okumura_rb.isChecked():
+                    theory_pdf = 'okumura_hata.pdf'
+                elif self.ecc_33_rb.isChecked():
+                    theory_pdf = 'ecc_33_model.pdf'
+                elif self.cost_231_rb.isChecked():
+                    theory_pdf = 'cost_231_hata_model.pdf'
+                elif self.two_ray_rb_2.isChecked():
+                    theory_pdf = 'two-ray_ground-reflection_model.pdf'
+                elif self.ericsson_rb.isChecked():
+                    theory_pdf = 'ericsson_model.pdf'
+                else:
+                    pass
+            elif self.current_button_pressed == 2:
+                if self.itu_rb.isChecked():
+                    theory_pdf = 'itu_model_for_indoor_attenuation.pdf'
+                elif self.log_distance_rb.isChecked():
+                    theory_pdf = 'log_distance_path_loss.pdf'
+                else:
+                    pass
 
-        pdf = PDF()
-        pdf.print_page('.\\output_imgs\\result.png')
-        pdf.output('.\\result.pdf', 'F')
+            plt.figure(figsize=(12, 4))
+            plt.grid(color='#F2F2F2', alpha=1, zorder=0)
+            plt.plot(self.current_distance, self.current_pathLoss, color='#000000', lw=3, zorder=5)
+            if self.current_pathLoss_2 is not None:
+                plt.plot(self.current_distance, self.current_pathLoss_2, color='#ff0000', lw=3, zorder=5)
+            plt.title(f"Path loss : {self.current_pathLossStr} dB", fontsize=17)
+            if self.current_pathLossStr_2 is not None:
+                plt.title(f"Path loss (Black) : {self.current_pathLossStr} dB / (Red) {self.current_pathLossStr_2} dB",
+                          fontsize=17)
+            plt.xlabel('Distance (m)', fontsize=13)
+            plt.xticks(fontsize=9)
+            plt.ylabel('Path Loss (dB)', fontsize=13)
+            plt.yticks(fontsize=9)
+            plt.savefig('.\\output_imgs\\result.png', dpi=300, bbox_inches='tight', pad_inches=0)
+            plt.close()
 
-        pdfs = [f'.\\theory_models_pdf\\{theory_pdf}', '.\\result.pdf']
+            pdf = PDF()
+            pdf.print_page('.\\output_imgs\\result.png')
+            pdf.output('.\\result.pdf', 'F')
 
-        merger = PdfFileMerger()
+            pdfs = [f'.\\theory_models_pdf\\{theory_pdf}', '.\\result.pdf']
 
-        for pdf in pdfs:
-            merger.append(pdf)
+            merger = PdfFileMerger()
 
-        merger.write(".\\final_report.pdf")
-        merger.close()
+            for pdf in pdfs:
+                merger.append(pdf)
 
-        subprocess.Popen([r'.\\final_report.pdf'], shell=True)
+            merger.write(".\\final_report.pdf")
+            merger.close()
+
+            subprocess.Popen([r'.\\final_report.pdf'], shell=True)
+
+        else:
+            print("Please provide a calculation")
