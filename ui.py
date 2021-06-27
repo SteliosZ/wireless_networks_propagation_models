@@ -549,11 +549,11 @@ class Ui_App(object):
         self.trans_height_label.setText(_translate("App", "  Transmitter Height (Htr)"))
         self.Loss_exp_label.setText(_translate("App", "   L   (Loss exponent) "))
         self.receiver_height_label.setText(_translate("App", "  Reciever Height (Htt)"))
-        self.distance_max_meter.setPlaceholderText(_translate("App", "Meters"))
+        self.distance_max_meter.setPlaceholderText(_translate("App", "km"))
         self.transmitter_height.setPlaceholderText(_translate("App", "Meters"))
         self.max_meter_label.setText(_translate("App", "  Max Distance:"))
         self.freq_label.setText(_translate("App", "   Frequency (F)"))
-        self.frequency_outdoor.setPlaceholderText(_translate("App", "Hz"))
+        self.frequency_outdoor.setPlaceholderText(_translate("App", "MHz"))
         self.loss_exp_value.setPlaceholderText(_translate("App", "Value"))
         self.receiver_height.setPlaceholderText(_translate("App", "Meters"))
         self.transmitter_gain_value.setPlaceholderText(_translate("App", "dB"))
@@ -570,7 +570,7 @@ class Ui_App(object):
         self.no_fading_rb.setText(_translate("App", "No Fading"))
         self.slow_fading_rb.setText(_translate("App", "Slow Fadding"))
         self.fast_fading_rb.setText(_translate("App", "Fast Fadding"))
-        self.frequency_indoor.setPlaceholderText(_translate("App", "Hz"))
+        self.frequency_indoor.setPlaceholderText(_translate("App", "MHz"))
         self.max_distance_value.setPlaceholderText(_translate("App", "Meters"))
         self.floor_number.setPlaceholderText(_translate("App", "Floor Number"))
         self.frequency_ind_label.setText(_translate("App", "Frequency (F)"))
@@ -650,10 +650,10 @@ class Ui_App(object):
         # Max Distance in meters
         d: float = float(self.distance_max_meter.text())
 
-        distance_space = np.arange(1, int(d) + 1)
+        distance_space = np.arange(0.01, d + 1)
 
         # Free Space Model
-        pathLoss = 20 * (np.log10(distance_space)) + 20 * (np.log10(int(f))) + 32.34
+        pathLoss = 20 * (np.log10(distance_space)) + 20 * (np.log10(f)) + 32.34
 
         distance_space *= 1000
 
@@ -680,25 +680,25 @@ class Ui_App(object):
             # Max Distance in meters
             d: float = float(self.distance_max_meter.text())
 
-            distance_space = np.arange(1, int(d) + 1)
+            distance_space = np.arange(0.01, d + 1)
 
-            htr = int(self.transmitter_height.text())
-            htt = int(self.receiver_height.text())
+            htr = float(self.transmitter_height.text())
+            htt = float(self.receiver_height.text())
 
             self.graphics_view.clear()
 
             # Okumura Hata Model
-            CH = 0.8 + (1.1 * ((np.log10(int(f))) - 0.7)) * (int(htt)) - (1.56 * (np.log10(int(f))))
-            pathLoss_small = 69.55 + 26.16 * (np.log10(int(f))) - 13.82 * (np.log10(int(htr))) - CH + (
-                    44.9 - 6.55 * (np.log10(int(htr)))) * (np.log10(distance_space))
+            CH = 0.8 + (1.1 * ((np.log10(f)) - 0.7)) * htt - (1.56 * (np.log10(f)))
+            pathLoss_small = 69.55 + 26.16 * (np.log10(f)) - 13.82 * (np.log10(htr)) - CH + (
+                    44.9 - 6.55 * (np.log10(htr))) * (np.log10(distance_space))
 
             pen = pyqtgraph.mkPen(color=(255, 0, 0))
 
             if 150 <= f <= 200:
                 # Okumura Hata Model
-                CH = 8.29 * (np.power(np.log10(1.54 * int(htt)), 2)) - 1.1
-                pathLoss = 69.55 + 26.16 * (np.log10(int(f))) - 13.82 * (np.log10(int(htr))) - CH + (
-                        44.9 - 6.55 * (np.log10(int(htr)))) * (np.log10(distance_space))
+                CH = 8.29 * (np.power(np.log10(1.54 * htt), 2)) - 1.1
+                pathLoss = 69.55 + 26.16 * (np.log10(f)) - 13.82 * (np.log10(htr)) - CH + (
+                        44.9 - 6.55 * (np.log10(htr))) * (np.log10(distance_space))
 
                 distance_space *= 1000
                 pathLossStr = str(round(pathLoss[-1], 2))
@@ -720,9 +720,9 @@ class Ui_App(object):
 
             elif 200 < f <= 1500:
                 # Okumura Hata Model
-                CH = 3.2 * (np.power(np.log10(11.75 * int(htt)), 2)) - 4.97
-                pathLoss = 69.55 + 26.16 * (np.log10(int(f))) - 13.82 * (np.log10(int(htr))) - CH + (
-                        44.9 - 6.55 * (np.log10(int(htr)))) * (np.log10(distance_space))
+                CH = 3.2 * (np.power(np.log10(11.75 * htt), 2)) - 4.97
+                pathLoss = 69.55 + 26.16 * (np.log10(f)) - 13.82 * (np.log10(htr)) - CH + (
+                        44.9 - 6.55 * (np.log10(htr))) * (np.log10(distance_space))
 
                 distance_space *= 1000
 
@@ -764,16 +764,17 @@ class Ui_App(object):
             # Max Distance in meters
             d: float = float(self.distance_max_meter.text())
 
-            distance_space = np.arange(1, int(d) + 1)
+            distance_space = np.arange(0.01, d + 1)
 
-            htr = int(self.transmitter_height.text())
-            htt = int(self.receiver_height.text())
+            htr = float(self.transmitter_height.text())
+            htt = float(self.receiver_height.text())
 
-            CH = 0.8 + (1.1 * ((np.log10(int(f))) - 0.7)) * (int(htt)) - (1.56 * (np.log10(int(f))))
-            LSU = 2 * (((np.log10(int(f))) / 28) ** 2) - 5.4
-            pathLoss = 69.55 + 26.16 * (np.log10(int(f))) - 13.82 * (np.log10(int(htr))) - CH + (
-                    44.9 - 6.55 * (np.log10(int(htr)))) * (np.log10(distance_space)) - LSU
+            CH = 0.8 + (1.1 * ((np.log10(f)) - 0.7)) * htt - (1.56 * (np.log10(f)))
+            LSU = 2 * (((np.log10(f)) / 28) ** 2) - 5.4
+            pathLoss = 69.55 + 26.16 * (np.log10(f)) - 13.82 * (np.log10(htr)) - CH + (
+                    44.9 - 6.55 * (np.log10(htr))) * (np.log10(distance_space)) - LSU
 
+            # print(pathLoss)
             pathLoss_Str = str(round(pathLoss[-1], 2))
 
             distance_space *= 1000
@@ -795,15 +796,15 @@ class Ui_App(object):
             # Max Distance in meters
             d: float = float(self.distance_max_meter.text())
 
-            distance_space = np.arange(1, int(d) + 1)
+            distance_space = np.arange(0.01, d + 1)
 
-            htr = int(self.transmitter_height.text())
-            htt = int(self.receiver_height.text())
+            htr = float(self.transmitter_height.text())
+            htt = float(self.receiver_height.text())
 
-            CH = 0.8 + (1.1 * ((np.log10(int(f))) - 0.7)) * (int(htt)) - (1.56 * (np.log10(int(f))))
-            pathLoss = 69.55 + 26.16 * (np.log10(int(f))) - 13.82 * (np.log10(int(htr))) - CH + (
-                    44.9 - 6.55 * (np.log10(int(htr)))) * np.log10(distance_space) - 40.99 - 4.78 * np.power(
-                np.log10(int(f)), 2) + 18.33 * np.log10(int(f))
+            CH = 0.8 + (1.1 * ((np.log10(f)) - 0.7)) * htt - (1.56 * (np.log10(f)))
+            pathLoss = 69.55 + 26.16 * (np.log10(f)) - 13.82 * (np.log10(htr)) - CH + (
+                    44.9 - 6.55 * (np.log10(htr))) * np.log10(distance_space) - 40.99 - 4.78 * np.power(
+                np.log10(f), 2) + 18.33 * np.log10(f)
 
             pathLoss_Str = str(round(pathLoss[-1], 2))
 
@@ -828,16 +829,16 @@ class Ui_App(object):
             # Max Distance in meters
             d: float = float(self.distance_max_meter.text())
 
-            distance_space = np.arange(1, int(d) + 1)
+            distance_space = np.arange(0.01, d + 1)
 
-            htr = int(self.transmitter_height.text())
-            htt = int(self.receiver_height.text())
+            htr = float(self.transmitter_height.text())
+            htt = float(self.receiver_height.text())
 
-            Asf = 92.4 + 20 * np.log10(distance_space) + 20 * np.log10(int(f))
-            Amb = 20.41 + 9.83 * np.log10(distance_space) + 7.894 * np.log10(int(f)) + 9.56 * \
-                  np.power(np.log10(int(f)), 2)
+            Asf = 92.4 + 20 * np.log10(distance_space) + 20 * np.log10(f)
+            Amb = 20.41 + 9.83 * np.log10(distance_space) + 7.894 * np.log10(f) + 9.56 * \
+                  np.power(np.log10(f), 2)
             Gd = np.log10(htr / 200) * (13.958 + 5.8 * np.power(np.log10(distance_space), 2))
-            Gs = (42.57 + 13.7 * (np.log10(int(f)))) * (np.log10(htt) - 0.585)
+            Gs = (42.57 + 13.7 * (np.log10(f))) * (np.log10(htt) - 0.585)
 
             pathLoss = Asf + Amb - Gd - Gs
 
@@ -862,14 +863,14 @@ class Ui_App(object):
             # Max Distance in meters
             d: float = float(self.distance_max_meter.text())
 
-            distance_space = np.arange(1, int(d) + 1)
+            distance_space = np.arange(0.01, d + 1)
 
-            htr = int(self.transmitter_height.text())
-            htt = int(self.receiver_height.text())
+            htr = float(self.transmitter_height.text())
+            htt = float(self.receiver_height.text())
 
-            Asf = 92.4 + 20 * np.log10(distance_space) + 20 * np.log10(int(f))
-            Amb = 20.41 + 9.83 * np.log10(distance_space) + 7.894 * np.log10(int(f)) + 9.56 * \
-                  np.power(np.log10(int(f)), 2)
+            Asf = 92.4 + 20 * np.log10(distance_space) + 20 * np.log10(f)
+            Amb = 20.41 + 9.83 * np.log10(distance_space) + 7.894 * np.log10(f) + 9.56 * \
+                  np.power(np.log10(f), 2)
             Gd = np.log10(htr / 200) * (13.958 + 5.8 * np.power(np.log10(distance_space), 2))
             Gs = 0.759 * htt - 1.862
 
@@ -897,20 +898,20 @@ class Ui_App(object):
         # Max Distance in meters
         d: float = float(self.distance_max_meter.text())
 
-        distance_space = np.arange(1, int(d) + 1)
+        distance_space = np.arange(0.01, d + 1)
 
-        htr = int(self.transmitter_height.text())
-        htt = int(self.receiver_height.text())
+        htr = float(self.transmitter_height.text())
+        htt = float(self.receiver_height.text())
 
         if self.med_city_rb.isChecked() or self.suburb_rb.isChecked():
             Cc = 0
-            ahtt = (1.1 * np.log10(int(f)) - 0.7) * htt - (1.56 * np.log10(int(f)) - 0.8)
-            pathLoss = 46.3 + 33.9 * np.log10(int(f)) - 13.28 * np.log10(int(htr)) - ahtt + 44.9 - 6.55 * np.log10(
+            ahtt = (1.1 * np.log10(f) - 0.7) * htt - (1.56 * np.log10(f) - 0.8)
+            pathLoss = 46.3 + 33.9 * np.log10(f) - 13.28 * np.log10(htr) - ahtt + 44.9 - 6.55 * np.log10(
                 htr) + np.log10(distance_space) + Cc
         else:
             Cc = 3
             ahtt = 3.2 * np.power(np.log10(11.75 * htt), 2) - 4.97
-            pathLoss = 46.3 + 33.9 * np.log10(int(f)) - 13.28 * np.log10(int(htr)) - ahtt + 44.9 - 6.55 * np.log10(
+            pathLoss = 46.3 + 33.9 * np.log10(f) - 13.28 * np.log10(htr) - ahtt + 44.9 - 6.55 * np.log10(
                 htr) + np.log10(distance_space) + Cc
 
         pathLoss_Str = str(round(pathLoss[-1], 2))
@@ -932,10 +933,10 @@ class Ui_App(object):
         # Max Distance in meters
         d: float = float(self.distance_max_meter.text())
 
-        distance_space = np.arange(1, int(d) + 1)
+        distance_space = np.arange(0.01, d + 1)
 
-        htt = int(self.receiver_height.text())
-        ghtr = int(self.transmitter_gain_value.text())
+        htt = float(self.receiver_height.text())
+        ghtr = float(self.transmitter_gain_value.text())
 
         pathLoss = 40 * np.log10(distance_space) - 10 * np.log10(np.power(ghtr, 2) * np.power(htt, 2))
 
@@ -960,10 +961,10 @@ class Ui_App(object):
         f: float = float(self.frequency_outdoor.text())
         # Max Distance in meters
         d: float = float(self.distance_max_meter.text())
-        htr = int(self.transmitter_height.text())
-        gf = 44.49 * np.power(np.log10(int(f)) - 4.78 * np.log10(int(f)), 2)
+        htr = float(self.transmitter_height.text())
+        gf = 44.49 * np.power(np.log10(f) - 4.78 * np.log10(f), 2)
 
-        distance_space = np.arange(1, int(d) + 1)
+        distance_space = np.arange(0.01, d + 1)
 
         if self.urban_rb.isChecked():
             a = [36.2, 30.2, 12, 0.1]
@@ -1166,9 +1167,9 @@ class Ui_App(object):
         # print("ITU Indoor Model Calculation")
         f: float = float(self.frequency_indoor.text())
         N: int = int(self.power_loss_value.currentText())
-        d = int(self.max_distance_value.text())
+        d = float(self.max_distance_value.text())
 
-        distance_space = np.arange(1, int(d) + 1)
+        distance_space = np.arange(0.01, d + 1)
 
         if self.floor_number.text() == '1' and self.area_value.currentText() == 'Office' and float(
                 self.frequency_indoor.text()) == 900000.0:
@@ -1200,7 +1201,7 @@ class Ui_App(object):
         else:
             pfn = 0
 
-        pathLoss = 20 * np.log10(int(f)) + N * np.log10(distance_space) + pfn - 28
+        pathLoss = 20 * np.log10(f) + N * np.log10(distance_space) + pfn - 28
 
         pathLoss_Str = str(round(pathLoss[-1], 2))
 
@@ -1232,8 +1233,8 @@ class Ui_App(object):
             'Textile or Chemical 4GHz': [2.1, 4000000.0],
             'Commercial': [1.7, 60000000.0],
         }
-        distance_space = np.arange(1, int(d) + 1)
-        distance_space_d0 = np.arange(1, int(d0) + 1)
+        distance_space = np.arange(0.01, d + 1)
+        distance_space_d0 = np.arange(0.01, d0 + 1)
 
         if self.path_loss_exp_value.currentText() in path_loss_exponent.keys():
             free_space_pathLoss = 20 * (np.log10(distance_space_d0)) + 20 * (
@@ -1243,7 +1244,7 @@ class Ui_App(object):
         else:
             f: float = float(self.frequency_indoor.text())
             free_space_pathLoss = 20 * (np.log10(distance_space_d0)) + 20 * (
-                np.log10(int(f))) + 32.34
+                np.log10(f)) + 32.34
 
             pathLoss = free_space_pathLoss + 10 * 2.0 * np.log10(d / d0)
 
