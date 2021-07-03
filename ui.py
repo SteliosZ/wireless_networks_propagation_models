@@ -1156,10 +1156,10 @@ class Ui_App(object):
             self.frequency_indoor.setDisabled(True)
 
     def check_itu_area(self):
-        if self.area_value.currentText() == 'Residential' and 1800000.0 <= float(
-                self.frequency_indoor.text()) <= 2000000.0:
+        if self.area_value.currentText() == 'Residential' and 1800.0 <= float(
+                self.frequency_indoor.text()) <= 2000.0:
             self.power_loss_value.setCurrentIndex(3)
-        elif self.area_value.currentText() == 'Residential' and float(self.frequency_indoor.text()) == 5200000.0:
+        elif self.area_value.currentText() == 'Residential' and float(self.frequency_indoor.text()) == 5200.0:
             self.power_loss_value.setCurrentIndex(2)
         elif self.area_value.currentText() == 'Office':
             print(self.area_value.currentText())
@@ -1175,31 +1175,31 @@ class Ui_App(object):
         distance_space = np.arange(0.0001, d + 1, 0.001)
 
         if self.floor_number.text() == '1' and self.area_value.currentText() == 'Office' and float(
-                self.frequency_indoor.text()) == 900000.0:
+                self.frequency_indoor.text()) == 900.0:
             pfn = 9
         elif self.floor_number.text() == '2' and self.area_value.currentText() == 'Office' and float(
-                self.frequency_indoor.text()) == 900000.0:
+                self.frequency_indoor.text()) == 900.0:
             pfn = 19
         elif self.floor_number.text() == '3' and self.area_value.currentText() == 'Office' and float(
-                self.frequency_indoor.text()) == 900000.0:
+                self.frequency_indoor.text()) == 900.0:
             pfn = 24
         elif self.floor_number.text() == '1' and self.area_value.currentText() == 'Office' and float(
-                self.frequency_indoor.text()) == 5200000.0:
+                self.frequency_indoor.text()) == 5200.0:
             pfn = 16
         elif self.floor_number.text() == '1' and self.area_value.currentText() == 'Office' and float(
-                self.frequency_indoor.text()) == 5800000.0:
+                self.frequency_indoor.text()) == 5800.0:
             pfn = 22
         elif self.floor_number.text() == '2' and self.area_value.currentText() == 'Office' and float(
-                self.frequency_indoor.text()) == 5800000.0:
+                self.frequency_indoor.text()) == 5800.0:
             pfn = 28
-        elif 1800000.0 <= float(
-                self.frequency_indoor.text()) <= 2000000.0 and self.area_value.currentText() == 'Residential':
+        elif 1800.0 <= float(
+                self.frequency_indoor.text()) <= 2000.0 and self.area_value.currentText() == 'Residential':
             pfn = int(self.floor_number.text()) * 4
-        elif 1800000.0 <= float(
-                self.frequency_indoor.text()) <= 2000000.0 and self.area_value.currentText() == 'Office':
+        elif 1800.0 <= float(
+                self.frequency_indoor.text()) <= 2000.0 and self.area_value.currentText() == 'Office':
             pfn = 15 + 4 * (int(self.floor_number.text()) - 1)
-        elif 1800000.0 <= float(
-                self.frequency_indoor.text()) <= 2000000.0 and self.area_value.currentText() == 'Commercial':
+        elif 1800.0 <= float(
+                self.frequency_indoor.text()) <= 2000.0 and self.area_value.currentText() == 'Commercial':
             pfn = 6 + 3 * (int(self.floor_number.text()) - 1)
         else:
             pfn = 0
@@ -1254,7 +1254,7 @@ class Ui_App(object):
         if self.no_fading_rb.isChecked():
             pass
         else:
-            s = np.random.normal(1000)
+            s = np.random.normal(1)
             pathLoss = pathLoss + s
 
         pathLoss_Str = str(round(pathLoss[-1], 2))
