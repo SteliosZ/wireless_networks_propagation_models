@@ -1172,7 +1172,7 @@ class Ui_App(object):
         N: int = int(self.power_loss_value.currentText())
         d = float(self.max_distance_value.text())
 
-        distance_space = np.arange(0.01, d + 1)
+        distance_space = np.arange(0.0001, d + 1, 0.001)
 
         if self.floor_number.text() == '1' and self.area_value.currentText() == 'Office' and float(
                 self.frequency_indoor.text()) == 900000.0:
@@ -1208,7 +1208,7 @@ class Ui_App(object):
 
         pathLoss_Str = str(round(pathLoss[-1], 2))
 
-        distance_space *= 1000
+        distance_space *= 1
 
         self.graphics_view_2.clear()
         self.graphics_view_2.setTitle(f"Path loss : {pathLoss_Str} dB")
@@ -1226,18 +1226,18 @@ class Ui_App(object):
         d: float = float(self.max_distance_value.text())
         d0: float = float(self.reference_distance_value.text())
         path_loss_exponent: dict = {
-            'Retail Store': [2.2, 914000.0],
-            'Grocery Store': [1.8, 914000.0],
-            'Office': [2.2, 60000000.0],
-            'Office with Soft Partition 900MHz': [2.4, 900000.0],
-            'Office with Soft Partition 1.9GHz': [2.6, 1900000.0],
-            'Office with Hard Partition ': [3.0, 1500000.0],
-            'Textile or Chemical 1.3GHz': [2.0, 1300000.0],
-            'Textile or Chemical 4GHz': [2.1, 4000000.0],
-            'Commercial': [1.7, 60000000.0],
+            'Retail Store': [2.2, 914],
+            'Grocery Store': [1.8, 914],
+            'Office': [2.2, 60000],
+            'Office with Soft Partition 900MHz': [2.4, 900],
+            'Office with Soft Partition 1.9GHz': [2.6, 1900],
+            'Office with Hard Partition ': [3.0, 1500],
+            'Textile or Chemical 1.3GHz': [2.0, 1300],
+            'Textile or Chemical 4GHz': [2.1, 4000],
+            'Commercial': [1.7, 60000],
         }
-        distance_space = np.arange(0.01, d + 1)
-        distance_space_d0 = np.arange(0.01, d0 + 1)
+        distance_space = np.arange(0.0001, d + 1,0.001)
+        distance_space_d0 = np.arange(0.0001, d0 + 1,0.001)
 
         if self.path_loss_exp_value.currentText() in path_loss_exponent.keys():
             free_space_pathLoss = 20 * (np.log10(distance_space_d0)) + 20 * (
@@ -1259,7 +1259,7 @@ class Ui_App(object):
 
         pathLoss_Str = str(round(pathLoss[-1], 2))
 
-        distance_space_d0 *= 1000
+        distance_space_d0 *= 1
 
         self.graphics_view_2.clear()
         self.graphics_view_2.setTitle(f"Path loss : {pathLoss_Str} dB")
