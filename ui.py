@@ -650,18 +650,21 @@ class Ui_App(object):
         # Max Distance in meters
         d: float = float(self.distance_max_meter.text())
 
-        distance_space = np.arange(0.01, d + 1)
+        distance_space = np.arange(0.0001, d+1, 0.001)
 
         # Free Space Model
         pathLoss = 20 * (np.log10(distance_space)) + 20 * (np.log10(f)) + 32.34
 
-        distance_space *= 1000
 
-        pathLossStr = str(round(pathLoss[-1], 2))
+        distance_space = distance_space * 1001
+
+        pathLossStr = str(round(pathLoss[-1], 4))
 
         self.graphics_view.clear()
         self.graphics_view.setTitle(f"Path loss : {pathLossStr} dB")
-        self.graphics_view.plot(distance_space, pathLoss)
+        self.graphics_view.setYRange(1,float(pathLossStr)+10)
+        self.graphics_view.setXRange(0,float(d*1000)+10)
+        self.graphics_view.plot(distance_space,pathLoss)
 
         self.current_pathLossStr = pathLossStr
         self.current_pathLossStr_2 = None
