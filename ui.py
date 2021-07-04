@@ -1336,7 +1336,7 @@ class Ui_App(object):
     @staticmethod
     def error_dialog():
         msg = QMessageBox()
-        msg.setWindowTitle("About")
+        msg.setWindowTitle("Missing Values")
         msg.setText("Please Retry ! Missing Value(s) !")
 
         x = msg.exec_()
