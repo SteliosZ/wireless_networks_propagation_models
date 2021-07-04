@@ -978,6 +978,8 @@ class Ui_App(object):
         # print("Ericsson Outdoor Model Calculation")
         # Frequency in HZ
         f: float = float(self.frequency_outdoor.text())
+
+        f = f / 1000
         # Max Distance in meters
         d: float = float(self.distance_max_meter.text())
         htr = float(self.transmitter_height.text())
