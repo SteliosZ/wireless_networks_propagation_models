@@ -1329,7 +1329,6 @@ class Ui_App(object):
             self.current_button_pressed = 2
         except ValueError as e:
             self.error_dialog()
-            print(e.__str__())
 
     @staticmethod
     def dialog_menu():
