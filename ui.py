@@ -650,21 +650,20 @@ class Ui_App(object):
         # Max Distance in meters
         d: float = float(self.distance_max_meter.text())
 
-        distance_space = np.arange(0.0001, d+1, 0.001)
+        distance_space = np.arange(0.0001, d + 1, 0.001)
 
         # Free Space Model
         pathLoss = 20 * (np.log10(distance_space)) + 20 * (np.log10(f)) + 32.34
 
-
         distance_space = distance_space * 1001
 
-        pathLossStr = str(round(pathLoss[-1], 4))
+        pathLossStr = str(round(pathLoss[-1], 2))
 
         self.graphics_view.clear()
         self.graphics_view.setTitle(f"Path loss : {pathLossStr} dB")
-        self.graphics_view.setYRange(1,float(pathLossStr)+10)
-        self.graphics_view.setXRange(0,float(d*1000)+10)
-        self.graphics_view.plot(distance_space,pathLoss)
+        self.graphics_view.setYRange(1, float(pathLossStr) + 10)
+        self.graphics_view.setXRange(0, float(d * 1000) + 10)
+        self.graphics_view.plot(distance_space, pathLoss)
 
         self.current_pathLossStr = pathLossStr
         self.current_pathLossStr_2 = None
@@ -683,7 +682,7 @@ class Ui_App(object):
             # Max Distance in meters
             d: float = float(self.distance_max_meter.text())
 
-            distance_space = np.arange(0.01, d + 1)
+            distance_space = np.arange(0.0001, d + 1, 0.001)
 
             htr = float(self.transmitter_height.text())
             htt = float(self.receiver_height.text())
@@ -710,7 +709,8 @@ class Ui_App(object):
                 self.graphics_view.setTitle(
                     f"(Black)Large City PL:{pathLossStr} dB | (Red)Small City PL: "
                     f"{pathLossStr_small} dB")
-
+                self.graphics_view.setYRange(1, float(pathLossStr) + 10)
+                self.graphics_view.setXRange(0, float(d * 1000) + 10)
                 self.graphics_view.plot(distance_space, pathLoss_small, pen=pen)
                 self.graphics_view.plot(distance_space, pathLoss)
 
@@ -735,6 +735,8 @@ class Ui_App(object):
                 self.graphics_view.setTitle(
                     f"(Black)Large City PL: {pathLossStr} dB | (Red)Small City PL: "
                     f"{pathLossStr_small} dB")
+                self.graphics_view.setYRange(1, float(pathLossStr) + 10)
+                self.graphics_view.setXRange(0, float(d * 1000) + 10)
                 self.graphics_view.plot(distance_space, pathLoss_small, pen=pen)
                 self.graphics_view.plot(distance_space, pathLoss)
 
@@ -751,6 +753,8 @@ class Ui_App(object):
 
                 self.graphics_view.setTitle(
                     f"Small/Medium-Sized City Path Loss : {pathLossStr_small} dB")
+                self.graphics_view.setYRange(1, float(pathLossStr_small) + 10)
+                self.graphics_view.setXRange(0, float(d * 1000) + 10)
                 self.graphics_view.plot(distance_space, pathLoss_small)
 
                 self.current_pathLossStr = None
@@ -767,7 +771,7 @@ class Ui_App(object):
             # Max Distance in meters
             d: float = float(self.distance_max_meter.text())
 
-            distance_space = np.arange(0.01, d + 1)
+            distance_space = np.arange(0.0001, d + 1, 0.001)
 
             htr = float(self.transmitter_height.text())
             htt = float(self.receiver_height.text())
@@ -778,15 +782,17 @@ class Ui_App(object):
                     44.9 - 6.55 * (np.log10(htr))) * (np.log10(distance_space)) - LSU
 
             # print(pathLoss)
-            pathLoss_Str = str(round(pathLoss[-1], 2))
+            pathLossStr = str(round(pathLoss[-1], 2))
 
             distance_space *= 1000
 
             self.graphics_view.clear()
-            self.graphics_view.setTitle(f"Path loss : {pathLoss_Str} dB")
+            self.graphics_view.setTitle(f"Path loss : {pathLossStr} dB")
+            self.graphics_view.setYRange(1, float(pathLossStr) + 10)
+            self.graphics_view.setXRange(0, float(d * 1000) + 10)
             self.graphics_view.plot(distance_space, pathLoss)
 
-            self.current_pathLossStr = pathLoss_Str
+            self.current_pathLossStr = pathLossStr
             self.current_pathLossStr_2 = None
             self.current_distance = distance_space
             self.current_pathLoss = pathLoss
@@ -799,7 +805,7 @@ class Ui_App(object):
             # Max Distance in meters
             d: float = float(self.distance_max_meter.text())
 
-            distance_space = np.arange(0.01, d + 1)
+            distance_space = np.arange(0.0001, d + 1, 0.001)
 
             htr = float(self.transmitter_height.text())
             htt = float(self.receiver_height.text())
@@ -809,15 +815,17 @@ class Ui_App(object):
                     44.9 - 6.55 * (np.log10(htr))) * np.log10(distance_space) - 40.99 - 4.78 * np.power(
                 np.log10(f), 2) + 18.33 * np.log10(f)
 
-            pathLoss_Str = str(round(pathLoss[-1], 2))
+            pathLossStr = str(round(pathLoss[-1], 2))
 
             distance_space *= 1000
 
             self.graphics_view.clear()
-            self.graphics_view.setTitle(f"Path loss : {pathLoss_Str} dB")
+            self.graphics_view.setTitle(f"Path loss : {pathLossStr} dB")
+            self.graphics_view.setYRange(1, float(pathLossStr) + 10)
+            self.graphics_view.setXRange(0, float(d * 1000) + 10)
             self.graphics_view.plot(distance_space, pathLoss)
 
-            self.current_pathLossStr = pathLoss_Str
+            self.current_pathLossStr = pathLossStr
             self.current_pathLossStr_2 = None
             self.current_distance = distance_space
             self.current_pathLoss = pathLoss
@@ -832,7 +840,7 @@ class Ui_App(object):
             # Max Distance in meters
             d: float = float(self.distance_max_meter.text())
 
-            distance_space = np.arange(0.01, d + 1)
+            distance_space = np.arange(0.0001, d + 1, 0.001)
 
             htr = float(self.transmitter_height.text())
             htt = float(self.receiver_height.text())
@@ -845,15 +853,17 @@ class Ui_App(object):
 
             pathLoss = Asf + Amb - Gd - Gs
 
-            pathLoss_Str = str(round(pathLoss[-1], 2))
+            pathLossStr = str(round(pathLoss[-1], 2))
 
             distance_space *= 1000
 
             self.graphics_view.clear()
-            self.graphics_view.setTitle(f"Path loss : {pathLoss_Str} dB")
+            self.graphics_view.setTitle(f"Path loss : {pathLossStr} dB")
+            self.graphics_view.setYRange(1, float(pathLossStr) + 10)
+            self.graphics_view.setXRange(0, float(d * 1000) + 10)
             self.graphics_view.plot(distance_space, pathLoss)
 
-            self.current_pathLossStr = pathLoss_Str
+            self.current_pathLossStr = pathLossStr
             self.current_pathLossStr_2 = None
             self.current_distance = distance_space
             self.current_pathLoss = pathLoss
@@ -866,7 +876,7 @@ class Ui_App(object):
             # Max Distance in meters
             d: float = float(self.distance_max_meter.text())
 
-            distance_space = np.arange(0.01, d + 1)
+            distance_space = np.arange(0.0001, d + 1, 0.001)
 
             htr = float(self.transmitter_height.text())
             htt = float(self.receiver_height.text())
@@ -885,6 +895,8 @@ class Ui_App(object):
 
             self.graphics_view.clear()
             self.graphics_view.setTitle(f"Path loss : {pathLoss_Str} dB")
+            self.graphics_view.setYRange(1, float(pathLoss_Str) + 10)
+            self.graphics_view.setXRange(0, float(d * 1000) + 10)
             self.graphics_view.plot(distance_space, pathLoss)
 
             self.current_pathLossStr = pathLoss_Str
@@ -901,7 +913,7 @@ class Ui_App(object):
         # Max Distance in meters
         d: float = float(self.distance_max_meter.text())
 
-        distance_space = np.arange(0.01, d + 1)
+        distance_space = np.arange(0.0001, d + 1, 0.001)
 
         htr = float(self.transmitter_height.text())
         htt = float(self.receiver_height.text())
@@ -922,6 +934,8 @@ class Ui_App(object):
 
         self.graphics_view.clear()
         self.graphics_view.setTitle(f"Path loss : {pathLoss_Str} dB")
+        self.graphics_view.setYRange(1, float(pathLoss_Str) + 10)
+        self.graphics_view.setXRange(0, float(d * 1000) + 10)
         self.graphics_view.plot(distance_space, pathLoss)
 
         self.current_pathLossStr = pathLoss_Str
@@ -936,7 +950,7 @@ class Ui_App(object):
         # Max Distance in meters
         d: float = float(self.distance_max_meter.text())
 
-        distance_space = np.arange(0.01, d + 1)
+        distance_space = np.arange(0.0001, d + 1, 0.001)
 
         htt = float(self.receiver_height.text())
         ghtr = float(self.transmitter_gain_value.text())
@@ -949,6 +963,8 @@ class Ui_App(object):
 
         self.graphics_view.clear()
         self.graphics_view.setTitle(f"Path loss : {pathLoss_Str} dB")
+        self.graphics_view.setYRange(1, float(pathLoss_Str) + 10)
+        self.graphics_view.setXRange(0, float(d * 1000) + 10)
         self.graphics_view.plot(distance_space, pathLoss)
 
         self.current_pathLossStr = pathLoss_Str
@@ -967,7 +983,7 @@ class Ui_App(object):
         htr = float(self.transmitter_height.text())
         gf = 44.49 * np.power(np.log10(f) - 4.78 * np.log10(f), 2)
 
-        distance_space = np.arange(0.01, d + 1)
+        distance_space = np.arange(0.0001, d + 1, 0.001)
 
         if self.urban_rb.isChecked():
             a = [36.2, 30.2, 12, 0.1]
@@ -993,6 +1009,8 @@ class Ui_App(object):
 
         self.graphics_view.clear()
         self.graphics_view.setTitle(f"Path loss : {pathLoss_Str} dB")
+        self.graphics_view.setYRange(1, float(pathLoss_Str) + 10)
+        self.graphics_view.setXRange(0, float(d * 1000) + 10)
         self.graphics_view.plot(distance_space, pathLoss)
 
         self.current_pathLossStr = pathLoss_Str
@@ -1212,6 +1230,8 @@ class Ui_App(object):
 
         self.graphics_view_2.clear()
         self.graphics_view_2.setTitle(f"Path loss : {pathLoss_Str} dB")
+        self.graphics_view.setYRange(1, float(pathLoss_Str) + 10)
+        self.graphics_view.setXRange(0, float(d * 1000) + 10)
         self.graphics_view_2.plot(distance_space, pathLoss)
 
         self.current_pathLossStr = pathLoss_Str
@@ -1236,8 +1256,8 @@ class Ui_App(object):
             'Textile or Chemical 4GHz': [2.1, 4000],
             'Commercial': [1.7, 60000],
         }
-        distance_space = np.arange(0.0001, d + 1,0.001)
-        distance_space_d0 = np.arange(0.0001, d0 + 1,0.001)
+        distance_space = np.arange(0.0001, d + 1, 0.001)
+        distance_space_d0 = np.arange(0.0001, d0 + 1, 0.001)
 
         if self.path_loss_exp_value.currentText() in path_loss_exponent.keys():
             free_space_pathLoss = 20 * (np.log10(distance_space_d0)) + 20 * (
@@ -1263,6 +1283,8 @@ class Ui_App(object):
 
         self.graphics_view_2.clear()
         self.graphics_view_2.setTitle(f"Path loss : {pathLoss_Str} dB")
+        self.graphics_view.setYRange(1, float(pathLoss_Str) + 10)
+        self.graphics_view.setXRange(0, float(d * 1000) + 10)
         self.graphics_view_2.plot(distance_space_d0, pathLoss)
 
         self.current_pathLossStr = pathLoss_Str
