@@ -1279,7 +1279,7 @@ class Ui_App(object):
                 'Office': [2.2, 60000],
                 'Office with Soft Partition 900MHz': [2.4, 900],
                 'Office with Soft Partition 1.9GHz': [2.6, 1900],
-                'Office with Hard Partition ': [3.0, 1500],
+                'Office with Hard Partition': [3.0, 1500],
                 'Textile or Chemical 1.3GHz': [2.0, 1300],
                 'Textile or Chemical 4GHz': [2.1, 4000],
                 'Commercial': [1.7, 60000],
@@ -1288,10 +1288,13 @@ class Ui_App(object):
             distance_space_d0 = np.arange(0.0001, d0 + 1, 0.001)
 
             if self.path_loss_exp_value.currentText() in path_loss_exponent.keys():
+                self.frequency_indoor.setPlaceholderText(
+                    str(path_loss_exponent[self.path_loss_exp_value.currentText()][1])
+                )
                 free_space_pathLoss = 20 * (np.log10(distance_space_d0)) + 20 * (
                     np.log10(int(path_loss_exponent[self.path_loss_exp_value.currentText()][1]))) + 32.34
-                pathLoss = free_space_pathLoss + 10 * path_loss_exponent[self.path_loss_exp_value.currentText()][
-                    0] * np.log10(d / d0)
+                pathLoss = free_space_pathLoss + 10 * float(
+                    path_loss_exponent[self.path_loss_exp_value.currentText()][0]) * np.log10(d / d0)
             else:
                 f: float = float(self.frequency_indoor.text())
                 free_space_pathLoss = 20 * (np.log10(distance_space_d0)) + 20 * (
@@ -1301,8 +1304,11 @@ class Ui_App(object):
 
             if self.no_fading_rb.isChecked():
                 pass
-            else:
+            elif self.slow_fading_rb.isChecked():
                 s = np.random.normal(1)
+                pathLoss = pathLoss + s
+            elif self.fast_fading_rb.isChecked():
+                s = np.random.rayleigh(2)
                 pathLoss = pathLoss + s
 
             pathLoss_Str = str(round(pathLoss[-1], 2))
@@ -1323,6 +1329,7 @@ class Ui_App(object):
             self.current_button_pressed = 2
         except ValueError as e:
             self.error_dialog()
+            print(e.__str__())
 
     @staticmethod
     def dialog_menu():
