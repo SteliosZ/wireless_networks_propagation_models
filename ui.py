@@ -644,197 +644,281 @@ class Ui_App(object):
             self.log_distance_indoor_model()
 
     def free_space_outdoor_model(self) -> None:
-        # print("Free Space Outdoor Model Calculation")
-        # Frequency in HZ
-        f: float = float(self.frequency_outdoor.text())
-        # Max Distance in meters
-        d: float = float(self.distance_max_meter.text())
+        try:
+            # print("Free Space Outdoor Model Calculation")
+            # Frequency in HZ
+            f: float = float(self.frequency_outdoor.text())
+            # Max Distance in meters
+            d: float = float(self.distance_max_meter.text())
 
-        distance_space = np.arange(0.0001, d + 1, 0.001)
+            distance_space = np.arange(0.0001, d + 1, 0.001)
 
-        # Free Space Model
-        pathLoss = 20 * (np.log10(distance_space)) + 20 * (np.log10(f)) + 32.34
+            # Free Space Model
+            pathLoss = 20 * (np.log10(distance_space)) + 20 * (np.log10(f)) + 32.34
 
-        distance_space = distance_space * 1001
+            distance_space = distance_space * 1001
 
-        pathLossStr = str(round(pathLoss[-1], 2))
+            pathLossStr = str(round(pathLoss[-1], 2))
 
-        self.graphics_view.clear()
-        self.graphics_view.setTitle(f"Path loss : {pathLossStr} dB")
-        self.graphics_view.setYRange(1, float(pathLossStr) + 10)
-        self.graphics_view.setXRange(0, float(d * 1000) + 10)
-        self.graphics_view.plot(distance_space, pathLoss)
+            self.graphics_view.clear()
+            self.graphics_view.setTitle(f"Path loss : {pathLossStr} dB")
+            self.graphics_view.setYRange(1, float(pathLossStr) + 10)
+            self.graphics_view.setXRange(0, float(d * 1000) + 10)
+            self.graphics_view.plot(distance_space, pathLoss)
 
-        self.current_pathLossStr = pathLossStr
-        self.current_pathLossStr_2 = None
-        self.current_distance = distance_space
-        self.current_pathLoss = pathLoss
-        self.current_pathLoss_2 = None
-        self.current_button_pressed = 1
+            self.current_pathLossStr = pathLossStr
+            self.current_pathLossStr_2 = None
+            self.current_distance = distance_space
+            self.current_pathLoss = pathLoss
+            self.current_pathLoss_2 = None
+            self.current_button_pressed = 1
+        except ValueError as e:
+            self.error_dialog()
 
     def okumura_hata_outdoor_model(self) -> None:
-        # print("Okumura Hata Outdoor Model Calculation")
-        # Equations from pdf
-        # Urban
-        if self.urban_rb.isChecked():
-            # Frequency in HZ
-            f: float = float(self.frequency_outdoor.text())
-            # Max Distance in meters
-            d: float = float(self.distance_max_meter.text())
+        try:
 
-            distance_space = np.arange(0.0001, d + 1, 0.001)
+            # print("Okumura Hata Outdoor Model Calculation")
+            # Equations from pdf
+            # Urban
+            if self.urban_rb.isChecked():
+                # Frequency in HZ
+                f: float = float(self.frequency_outdoor.text())
+                # Max Distance in meters
+                d: float = float(self.distance_max_meter.text())
 
-            htr = float(self.transmitter_height.text())
-            htt = float(self.receiver_height.text())
+                distance_space = np.arange(0.0001, d + 1, 0.001)
 
-            self.graphics_view.clear()
+                htr = float(self.transmitter_height.text())
+                htt = float(self.receiver_height.text())
 
-            # Okumura Hata Model
-            CH = 0.8 + (1.1 * ((np.log10(f)) - 0.7)) * htt - (1.56 * (np.log10(f)))
-            pathLoss_small = 69.55 + 26.16 * (np.log10(f)) - 13.82 * (np.log10(htr)) - CH + (
-                    44.9 - 6.55 * (np.log10(htr))) * (np.log10(distance_space))
+                self.graphics_view.clear()
 
-            pen = pyqtgraph.mkPen(color=(255, 0, 0))
-
-            if 150 <= f <= 200:
                 # Okumura Hata Model
-                CH = 8.29 * (np.power(np.log10(1.54 * htt), 2)) - 1.1
-                pathLoss = 69.55 + 26.16 * (np.log10(f)) - 13.82 * (np.log10(htr)) - CH + (
+                CH = 0.8 + (1.1 * ((np.log10(f)) - 0.7)) * htt - (1.56 * (np.log10(f)))
+                pathLoss_small = 69.55 + 26.16 * (np.log10(f)) - 13.82 * (np.log10(htr)) - CH + (
                         44.9 - 6.55 * (np.log10(htr))) * (np.log10(distance_space))
 
-                distance_space *= 1000
-                pathLossStr = str(round(pathLoss[-1], 2))
-                pathLossStr_small = str(round(pathLoss_small[-1], 2))
+                pen = pyqtgraph.mkPen(color=(255, 0, 0))
 
-                self.graphics_view.setTitle(
-                    f"(Black)Large City PL:{pathLossStr} dB | (Red)Small City PL: "
-                    f"{pathLossStr_small} dB")
+                if 150 <= f <= 200:
+                    # Okumura Hata Model
+                    CH = 8.29 * (np.power(np.log10(1.54 * htt), 2)) - 1.1
+                    pathLoss = 69.55 + 26.16 * (np.log10(f)) - 13.82 * (np.log10(htr)) - CH + (
+                            44.9 - 6.55 * (np.log10(htr))) * (np.log10(distance_space))
+
+                    distance_space *= 1000
+                    pathLossStr = str(round(pathLoss[-1], 2))
+                    pathLossStr_small = str(round(pathLoss_small[-1], 2))
+
+                    self.graphics_view.setTitle(
+                        f"(Black)Large City PL:{pathLossStr} dB | (Red)Small City PL: "
+                        f"{pathLossStr_small} dB")
+                    self.graphics_view.setYRange(1, float(pathLossStr) + 10)
+                    self.graphics_view.setXRange(0, float(d * 1000) + 10)
+                    self.graphics_view.plot(distance_space, pathLoss_small, pen=pen)
+                    self.graphics_view.plot(distance_space, pathLoss)
+
+                    self.current_pathLossStr = pathLossStr
+                    self.current_pathLossStr_2 = pathLossStr_small
+                    self.current_distance = distance_space
+                    self.current_pathLoss = pathLoss
+                    self.current_pathLoss_2 = pathLossStr_small
+                    self.current_button_pressed = 1
+
+                elif 200 < f <= 1500:
+                    # Okumura Hata Model
+                    CH = 3.2 * (np.power(np.log10(11.75 * htt), 2)) - 4.97
+                    pathLoss = 69.55 + 26.16 * (np.log10(f)) - 13.82 * (np.log10(htr)) - CH + (
+                            44.9 - 6.55 * (np.log10(htr))) * (np.log10(distance_space))
+
+                    distance_space *= 1000
+
+                    pathLossStr = str(round(pathLoss[-1], 2))
+                    pathLossStr_small = str(round(pathLoss_small[-1], 2))
+
+                    self.graphics_view.setTitle(
+                        f"(Black)Large City PL: {pathLossStr} dB | (Red)Small City PL: "
+                        f"{pathLossStr_small} dB")
+                    self.graphics_view.setYRange(1, float(pathLossStr) + 10)
+                    self.graphics_view.setXRange(0, float(d * 1000) + 10)
+                    self.graphics_view.plot(distance_space, pathLoss_small, pen=pen)
+                    self.graphics_view.plot(distance_space, pathLoss)
+
+                    self.current_pathLossStr = pathLossStr
+                    self.current_pathLossStr_2 = pathLossStr_small
+                    self.current_distance = distance_space
+                    self.current_pathLoss = pathLoss
+                    self.current_pathLoss_2 = pathLoss_small
+                    self.current_button_pressed = 1
+
+                else:
+                    distance_space *= 1000
+                    pathLossStr_small = str(round(pathLoss_small[-1], 2))
+
+                    self.graphics_view.setTitle(
+                        f"Small/Medium-Sized City Path Loss : {pathLossStr_small} dB")
+                    self.graphics_view.setYRange(1, float(pathLossStr_small) + 10)
+                    self.graphics_view.setXRange(0, float(d * 1000) + 10)
+                    self.graphics_view.plot(distance_space, pathLoss_small)
+
+                    self.current_pathLossStr = None
+                    self.current_pathLossStr_2 = pathLossStr_small
+                    self.current_distance = distance_space
+                    self.current_pathLoss = None
+                    self.current_pathLoss_2 = pathLoss_small
+                    self.current_button_pressed = 1
+
+            # SubUrban
+            elif self.suburb_rb.isChecked():
+                # Frequency in HZ
+                f: float = float(self.frequency_outdoor.text())
+                # Max Distance in meters
+                d: float = float(self.distance_max_meter.text())
+
+                distance_space = np.arange(0.0001, d + 1, 0.001)
+
+                htr = float(self.transmitter_height.text())
+                htt = float(self.receiver_height.text())
+
+                CH = 0.8 + (1.1 * ((np.log10(f)) - 0.7)) * htt - (1.56 * (np.log10(f)))
+                LSU = 2 * (((np.log10(f)) / 28) ** 2) - 5.4
+                pathLoss = 69.55 + 26.16 * (np.log10(f)) - 13.82 * (np.log10(htr)) - CH + (
+                        44.9 - 6.55 * (np.log10(htr))) * (np.log10(distance_space)) - LSU
+
+                # print(pathLoss)
+                pathLossStr = str(round(pathLoss[-1], 2))
+
+                distance_space *= 1000
+
+                self.graphics_view.clear()
+                self.graphics_view.setTitle(f"Path loss : {pathLossStr} dB")
                 self.graphics_view.setYRange(1, float(pathLossStr) + 10)
                 self.graphics_view.setXRange(0, float(d * 1000) + 10)
-                self.graphics_view.plot(distance_space, pathLoss_small, pen=pen)
                 self.graphics_view.plot(distance_space, pathLoss)
 
                 self.current_pathLossStr = pathLossStr
-                self.current_pathLossStr_2 = pathLossStr_small
+                self.current_pathLossStr_2 = None
                 self.current_distance = distance_space
                 self.current_pathLoss = pathLoss
-                self.current_pathLoss_2 = pathLossStr_small
+                self.current_pathLoss_2 = None
                 self.current_button_pressed = 1
+            # Open
+            elif self.open_area_rb.isChecked():
+                # Frequency in HZ
+                f: float = float(self.frequency_outdoor.text())
+                # Max Distance in meters
+                d: float = float(self.distance_max_meter.text())
 
-            elif 200 < f <= 1500:
-                # Okumura Hata Model
-                CH = 3.2 * (np.power(np.log10(11.75 * htt), 2)) - 4.97
+                distance_space = np.arange(0.0001, d + 1, 0.001)
+
+                htr = float(self.transmitter_height.text())
+                htt = float(self.receiver_height.text())
+
+                CH = 0.8 + (1.1 * ((np.log10(f)) - 0.7)) * htt - (1.56 * (np.log10(f)))
                 pathLoss = 69.55 + 26.16 * (np.log10(f)) - 13.82 * (np.log10(htr)) - CH + (
-                        44.9 - 6.55 * (np.log10(htr))) * (np.log10(distance_space))
+                        44.9 - 6.55 * (np.log10(htr))) * np.log10(distance_space) - 40.99 - 4.78 * np.power(
+                    np.log10(f), 2) + 18.33 * np.log10(f)
+
+                pathLossStr = str(round(pathLoss[-1], 2))
 
                 distance_space *= 1000
 
-                pathLossStr = str(round(pathLoss[-1], 2))
-                pathLossStr_small = str(round(pathLoss_small[-1], 2))
-
-                self.graphics_view.setTitle(
-                    f"(Black)Large City PL: {pathLossStr} dB | (Red)Small City PL: "
-                    f"{pathLossStr_small} dB")
+                self.graphics_view.clear()
+                self.graphics_view.setTitle(f"Path loss : {pathLossStr} dB")
                 self.graphics_view.setYRange(1, float(pathLossStr) + 10)
                 self.graphics_view.setXRange(0, float(d * 1000) + 10)
-                self.graphics_view.plot(distance_space, pathLoss_small, pen=pen)
                 self.graphics_view.plot(distance_space, pathLoss)
 
                 self.current_pathLossStr = pathLossStr
-                self.current_pathLossStr_2 = pathLossStr_small
+                self.current_pathLossStr_2 = None
                 self.current_distance = distance_space
                 self.current_pathLoss = pathLoss
-                self.current_pathLoss_2 = pathLoss_small
+                self.current_pathLoss_2 = None
                 self.current_button_pressed = 1
-
-            else:
-                distance_space *= 1000
-                pathLossStr_small = str(round(pathLoss_small[-1], 2))
-
-                self.graphics_view.setTitle(
-                    f"Small/Medium-Sized City Path Loss : {pathLossStr_small} dB")
-                self.graphics_view.setYRange(1, float(pathLossStr_small) + 10)
-                self.graphics_view.setXRange(0, float(d * 1000) + 10)
-                self.graphics_view.plot(distance_space, pathLoss_small)
-
-                self.current_pathLossStr = None
-                self.current_pathLossStr_2 = pathLossStr_small
-                self.current_distance = distance_space
-                self.current_pathLoss = None
-                self.current_pathLoss_2 = pathLoss_small
-                self.current_button_pressed = 1
-
-        # SubUrban
-        elif self.suburb_rb.isChecked():
-            # Frequency in HZ
-            f: float = float(self.frequency_outdoor.text())
-            # Max Distance in meters
-            d: float = float(self.distance_max_meter.text())
-
-            distance_space = np.arange(0.0001, d + 1, 0.001)
-
-            htr = float(self.transmitter_height.text())
-            htt = float(self.receiver_height.text())
-
-            CH = 0.8 + (1.1 * ((np.log10(f)) - 0.7)) * htt - (1.56 * (np.log10(f)))
-            LSU = 2 * (((np.log10(f)) / 28) ** 2) - 5.4
-            pathLoss = 69.55 + 26.16 * (np.log10(f)) - 13.82 * (np.log10(htr)) - CH + (
-                    44.9 - 6.55 * (np.log10(htr))) * (np.log10(distance_space)) - LSU
-
-            # print(pathLoss)
-            pathLossStr = str(round(pathLoss[-1], 2))
-
-            distance_space *= 1000
-
-            self.graphics_view.clear()
-            self.graphics_view.setTitle(f"Path loss : {pathLossStr} dB")
-            self.graphics_view.setYRange(1, float(pathLossStr) + 10)
-            self.graphics_view.setXRange(0, float(d * 1000) + 10)
-            self.graphics_view.plot(distance_space, pathLoss)
-
-            self.current_pathLossStr = pathLossStr
-            self.current_pathLossStr_2 = None
-            self.current_distance = distance_space
-            self.current_pathLoss = pathLoss
-            self.current_pathLoss_2 = None
-            self.current_button_pressed = 1
-        # Open
-        elif self.open_area_rb.isChecked():
-            # Frequency in HZ
-            f: float = float(self.frequency_outdoor.text())
-            # Max Distance in meters
-            d: float = float(self.distance_max_meter.text())
-
-            distance_space = np.arange(0.0001, d + 1, 0.001)
-
-            htr = float(self.transmitter_height.text())
-            htt = float(self.receiver_height.text())
-
-            CH = 0.8 + (1.1 * ((np.log10(f)) - 0.7)) * htt - (1.56 * (np.log10(f)))
-            pathLoss = 69.55 + 26.16 * (np.log10(f)) - 13.82 * (np.log10(htr)) - CH + (
-                    44.9 - 6.55 * (np.log10(htr))) * np.log10(distance_space) - 40.99 - 4.78 * np.power(
-                np.log10(f), 2) + 18.33 * np.log10(f)
-
-            pathLossStr = str(round(pathLoss[-1], 2))
-
-            distance_space *= 1000
-
-            self.graphics_view.clear()
-            self.graphics_view.setTitle(f"Path loss : {pathLossStr} dB")
-            self.graphics_view.setYRange(1, float(pathLossStr) + 10)
-            self.graphics_view.setXRange(0, float(d * 1000) + 10)
-            self.graphics_view.plot(distance_space, pathLoss)
-
-            self.current_pathLossStr = pathLossStr
-            self.current_pathLossStr_2 = None
-            self.current_distance = distance_space
-            self.current_pathLoss = pathLoss
-            self.current_pathLoss_2 = None
-            self.current_button_pressed = 1
+        except ValueError as e:
+            self.error_dialog()
 
     def ecc_33_outdoor_model(self) -> None:
-        # print("ECC 33 Outdoor Model Calculation")
-        if self.no_option_rb.isChecked():
+        try:
+            # print("ECC 33 Outdoor Model Calculation")
+            if self.no_option_rb.isChecked():
+                # Frequency in HZ
+                f: float = float(self.frequency_outdoor.text())
+                # Max Distance in meters
+                d: float = float(self.distance_max_meter.text())
+
+                distance_space = np.arange(0.0001, d + 1, 0.001)
+
+                htr = float(self.transmitter_height.text())
+                htt = float(self.receiver_height.text())
+
+                Asf = 92.4 + 20 * np.log10(distance_space) + 20 * np.log10(f)
+                Amb = 20.41 + 9.83 * np.log10(distance_space) + 7.894 * np.log10(f) + 9.56 * \
+                      np.power(np.log10(f), 2)
+                Gd = np.log10(htr / 200) * (13.958 + 5.8 * np.power(np.log10(distance_space), 2))
+                Gs = (42.57 + 13.7 * (np.log10(f))) * (np.log10(htt) - 0.585)
+
+                pathLoss = Asf + Amb - Gd - Gs
+
+                pathLossStr = str(round(pathLoss[-1], 2))
+
+                distance_space *= 1000
+
+                self.graphics_view.clear()
+                self.graphics_view.setTitle(f"Path loss : {pathLossStr} dB")
+                self.graphics_view.setYRange(1, float(pathLossStr) + 10)
+                self.graphics_view.setXRange(0, float(d * 1000) + 10)
+                self.graphics_view.plot(distance_space, pathLoss)
+
+                self.current_pathLossStr = pathLossStr
+                self.current_pathLossStr_2 = None
+                self.current_distance = distance_space
+                self.current_pathLoss = pathLoss
+                self.current_pathLoss_2 = None
+                self.current_button_pressed = 1
+
+            elif self.urban_rb.isChecked():
+                # Frequency in HZ
+                f: float = float(self.frequency_outdoor.text())
+                # Max Distance in meters
+                d: float = float(self.distance_max_meter.text())
+
+                distance_space = np.arange(0.0001, d + 1, 0.001)
+
+                htr = float(self.transmitter_height.text())
+                htt = float(self.receiver_height.text())
+
+                Asf = 92.4 + 20 * np.log10(distance_space) + 20 * np.log10(f)
+                Amb = 20.41 + 9.83 * np.log10(distance_space) + 7.894 * np.log10(f) + 9.56 * \
+                      np.power(np.log10(f), 2)
+                Gd = np.log10(htr / 200) * (13.958 + 5.8 * np.power(np.log10(distance_space), 2))
+                Gs = 0.759 * htt - 1.862
+
+                pathLoss = Asf + Amb - Gd - Gs
+
+                pathLoss_Str = str(round(pathLoss[-1], 2))
+
+                distance_space *= 1000
+
+                self.graphics_view.clear()
+                self.graphics_view.setTitle(f"Path loss : {pathLoss_Str} dB")
+                self.graphics_view.setYRange(1, float(pathLoss_Str) + 10)
+                self.graphics_view.setXRange(0, float(d * 1000) + 10)
+                self.graphics_view.plot(distance_space, pathLoss)
+
+                self.current_pathLossStr = pathLoss_Str
+                self.current_pathLossStr_2 = None
+                self.current_distance = distance_space
+                self.current_pathLoss = pathLoss
+                self.current_pathLoss_2 = None
+                self.current_button_pressed = 1
+        except ValueError as e:
+            self.error_dialog()
+
+    def cost_231_outdoor_model(self) -> None:
+        try:
+            # print("Cost 231 Outdoor Model Calculation")
             # Frequency in HZ
             f: float = float(self.frequency_outdoor.text())
             # Max Distance in meters
@@ -845,49 +929,47 @@ class Ui_App(object):
             htr = float(self.transmitter_height.text())
             htt = float(self.receiver_height.text())
 
-            Asf = 92.4 + 20 * np.log10(distance_space) + 20 * np.log10(f)
-            Amb = 20.41 + 9.83 * np.log10(distance_space) + 7.894 * np.log10(f) + 9.56 * \
-                  np.power(np.log10(f), 2)
-            Gd = np.log10(htr / 200) * (13.958 + 5.8 * np.power(np.log10(distance_space), 2))
-            Gs = (42.57 + 13.7 * (np.log10(f))) * (np.log10(htt) - 0.585)
+            if self.med_city_rb.isChecked() or self.suburb_rb.isChecked():
+                Cc = 0
+                ahtt = (1.1 * np.log10(f) - 0.7) * htt - (1.56 * np.log10(f) - 0.8)
+                pathLoss = 46.3 + 33.9 * np.log10(f) - 13.28 * np.log10(htr) - ahtt + 44.9 - 6.55 * np.log10(
+                    htr) + np.log10(distance_space) + Cc
+            else:
+                Cc = 3
+                ahtt = 3.2 * np.power(np.log10(11.75 * htt), 2) - 4.97
+                pathLoss = 46.3 + 33.9 * np.log10(f) - 13.28 * np.log10(htr) - ahtt + 44.9 - 6.55 * np.log10(
+                    htr) + np.log10(distance_space) + Cc
 
-            pathLoss = Asf + Amb - Gd - Gs
-
-            pathLossStr = str(round(pathLoss[-1], 2))
-
+            pathLoss_Str = str(round(pathLoss[-1], 2))
             distance_space *= 1000
 
             self.graphics_view.clear()
-            self.graphics_view.setTitle(f"Path loss : {pathLossStr} dB")
-            self.graphics_view.setYRange(1, float(pathLossStr) + 10)
+            self.graphics_view.setTitle(f"Path loss : {pathLoss_Str} dB")
+            self.graphics_view.setYRange(1, float(pathLoss_Str) + 10)
             self.graphics_view.setXRange(0, float(d * 1000) + 10)
             self.graphics_view.plot(distance_space, pathLoss)
 
-            self.current_pathLossStr = pathLossStr
+            self.current_pathLossStr = pathLoss_Str
             self.current_pathLossStr_2 = None
             self.current_distance = distance_space
             self.current_pathLoss = pathLoss
             self.current_pathLoss_2 = None
             self.current_button_pressed = 1
+        except ValueError as e:
+            self.error_dialog()
 
-        elif self.urban_rb.isChecked():
-            # Frequency in HZ
-            f: float = float(self.frequency_outdoor.text())
+    def two_ray_outdoor_model(self) -> None:
+        try:
+            # print("Two-Ray Outdoor Model Calculation")
             # Max Distance in meters
             d: float = float(self.distance_max_meter.text())
 
             distance_space = np.arange(0.0001, d + 1, 0.001)
 
-            htr = float(self.transmitter_height.text())
             htt = float(self.receiver_height.text())
+            ghtr = float(self.transmitter_gain_value.text())
 
-            Asf = 92.4 + 20 * np.log10(distance_space) + 20 * np.log10(f)
-            Amb = 20.41 + 9.83 * np.log10(distance_space) + 7.894 * np.log10(f) + 9.56 * \
-                  np.power(np.log10(f), 2)
-            Gd = np.log10(htr / 200) * (13.958 + 5.8 * np.power(np.log10(distance_space), 2))
-            Gs = 0.759 * htt - 1.862
-
-            pathLoss = Asf + Amb - Gd - Gs
+            pathLoss = 40 * np.log10(distance_space) - 10 * np.log10(np.power(ghtr, 2) * np.power(htt, 2))
 
             pathLoss_Str = str(round(pathLoss[-1], 2))
 
@@ -905,122 +987,62 @@ class Ui_App(object):
             self.current_pathLoss = pathLoss
             self.current_pathLoss_2 = None
             self.current_button_pressed = 1
-
-    def cost_231_outdoor_model(self) -> None:
-        # print("Cost 231 Outdoor Model Calculation")
-        # Frequency in HZ
-        f: float = float(self.frequency_outdoor.text())
-        # Max Distance in meters
-        d: float = float(self.distance_max_meter.text())
-
-        distance_space = np.arange(0.0001, d + 1, 0.001)
-
-        htr = float(self.transmitter_height.text())
-        htt = float(self.receiver_height.text())
-
-        if self.med_city_rb.isChecked() or self.suburb_rb.isChecked():
-            Cc = 0
-            ahtt = (1.1 * np.log10(f) - 0.7) * htt - (1.56 * np.log10(f) - 0.8)
-            pathLoss = 46.3 + 33.9 * np.log10(f) - 13.28 * np.log10(htr) - ahtt + 44.9 - 6.55 * np.log10(
-                htr) + np.log10(distance_space) + Cc
-        else:
-            Cc = 3
-            ahtt = 3.2 * np.power(np.log10(11.75 * htt), 2) - 4.97
-            pathLoss = 46.3 + 33.9 * np.log10(f) - 13.28 * np.log10(htr) - ahtt + 44.9 - 6.55 * np.log10(
-                htr) + np.log10(distance_space) + Cc
-
-        pathLoss_Str = str(round(pathLoss[-1], 2))
-        distance_space *= 1000
-
-        self.graphics_view.clear()
-        self.graphics_view.setTitle(f"Path loss : {pathLoss_Str} dB")
-        self.graphics_view.setYRange(1, float(pathLoss_Str) + 10)
-        self.graphics_view.setXRange(0, float(d * 1000) + 10)
-        self.graphics_view.plot(distance_space, pathLoss)
-
-        self.current_pathLossStr = pathLoss_Str
-        self.current_pathLossStr_2 = None
-        self.current_distance = distance_space
-        self.current_pathLoss = pathLoss
-        self.current_pathLoss_2 = None
-        self.current_button_pressed = 1
-
-    def two_ray_outdoor_model(self) -> None:
-        # print("Two-Ray Outdoor Model Calculation")
-        # Max Distance in meters
-        d: float = float(self.distance_max_meter.text())
-
-        distance_space = np.arange(0.0001, d + 1, 0.001)
-
-        htt = float(self.receiver_height.text())
-        ghtr = float(self.transmitter_gain_value.text())
-
-        pathLoss = 40 * np.log10(distance_space) - 10 * np.log10(np.power(ghtr, 2) * np.power(htt, 2))
-
-        pathLoss_Str = str(round(pathLoss[-1], 2))
-
-        distance_space *= 1000
-
-        self.graphics_view.clear()
-        self.graphics_view.setTitle(f"Path loss : {pathLoss_Str} dB")
-        self.graphics_view.setYRange(1, float(pathLoss_Str) + 10)
-        self.graphics_view.setXRange(0, float(d * 1000) + 10)
-        self.graphics_view.plot(distance_space, pathLoss)
-
-        self.current_pathLossStr = pathLoss_Str
-        self.current_pathLossStr_2 = None
-        self.current_distance = distance_space
-        self.current_pathLoss = pathLoss
-        self.current_pathLoss_2 = None
-        self.current_button_pressed = 1
+        except ValueError as e:
+            self.error_dialog()
 
     def ericsson_outdoor_model(self) -> None:
-        # print("Ericsson Outdoor Model Calculation")
-        # Frequency in HZ
-        f: float = float(self.frequency_outdoor.text())
+        try:
+            # print("Ericsson Outdoor Model Calculation")
+            # Frequency in HZ
+            f: float = float(self.frequency_outdoor.text())
 
-        f = f / 1000
-        # Max Distance in meters
-        d: float = float(self.distance_max_meter.text())
-        htr = float(self.transmitter_height.text())
-        gf = 44.49 * np.power(np.log10(f) - 4.78 * np.log10(f), 2)
+            f = f / 1000
+            # Max Distance in meters
+            d: float = float(self.distance_max_meter.text())
+            htr = float(self.transmitter_height.text())
+            gf = 44.49 * np.power(np.log10(f) - 4.78 * np.log10(f), 2)
 
-        distance_space = np.arange(0.0001, d + 1, 0.001)
+            distance_space = np.arange(0.0001, d + 1, 0.001)
 
-        if self.urban_rb.isChecked():
-            a = [36.2, 30.2, 12, 0.1]
+            if self.urban_rb.isChecked():
+                a = [36.2, 30.2, 12, 0.1]
 
-            pathLoss = a[0] + a[1] * np.log10(distance_space) + a[2] * np.log10(htr) + a[3] * (np.log10(htr) * np.log10(
-                distance_space)) - 3.2 * np.power(np.log10(11.75 * htr), 2) + gf
-        elif self.suburb_rb.isChecked():
-            a = [43.20, 68.93, 12, 0.1]
+                pathLoss = a[0] + a[1] * np.log10(distance_space) + a[2] * np.log10(htr) + a[3] * (
+                        np.log10(htr) * np.log10(
+                    distance_space)) - 3.2 * np.power(np.log10(11.75 * htr), 2) + gf
+            elif self.suburb_rb.isChecked():
+                a = [43.20, 68.93, 12, 0.1]
 
-            pathLoss = a[0] + a[1] * np.log10(distance_space) + a[2] * np.log10(htr) + a[3] * (np.log10(htr) * np.log10(
-                distance_space)) - 3.2 * np.power(np.log10(11.75 * htr), 2) + gf
-            pass
-        elif self.village_rb.isChecked():
-            a = [45.95, 100.6, 12, 0.1]
+                pathLoss = a[0] + a[1] * np.log10(distance_space) + a[2] * np.log10(htr) + a[3] * (
+                        np.log10(htr) * np.log10(
+                    distance_space)) - 3.2 * np.power(np.log10(11.75 * htr), 2) + gf
+                pass
+            elif self.village_rb.isChecked():
+                a = [45.95, 100.6, 12, 0.1]
 
-            pathLoss = a[0] + a[1] * np.log10(distance_space) + a[2] * np.log10(htr) + a[3] * (np.log10(htr) * np.log10(
-                distance_space)) - 3.2 * np.power(np.log10(11.75 * htr), 2) + gf
-            pass
+                pathLoss = a[0] + a[1] * np.log10(distance_space) + a[2] * np.log10(htr) + a[3] * (
+                        np.log10(htr) * np.log10(
+                    distance_space)) - 3.2 * np.power(np.log10(11.75 * htr), 2) + gf
+                pass
 
-        pathLoss_Str = str(round(pathLoss[-1], 2))
+            pathLoss_Str = str(round(pathLoss[-1], 2))
 
-        distance_space *= 1000
+            distance_space *= 1000
 
-        self.graphics_view.clear()
-        self.graphics_view.setTitle(f"Path loss : {pathLoss_Str} dB")
-        self.graphics_view.setYRange(1, float(pathLoss_Str) + 10)
-        self.graphics_view.setXRange(0, float(d * 1000) + 10)
-        self.graphics_view.plot(distance_space, pathLoss)
+            self.graphics_view.clear()
+            self.graphics_view.setTitle(f"Path loss : {pathLoss_Str} dB")
+            self.graphics_view.setYRange(1, float(pathLoss_Str) + 10)
+            self.graphics_view.setXRange(0, float(d * 1000) + 10)
+            self.graphics_view.plot(distance_space, pathLoss)
 
-        self.current_pathLossStr = pathLoss_Str
-        self.current_pathLossStr_2 = None
-        self.current_distance = distance_space
-        self.current_pathLoss = pathLoss
-        self.current_pathLoss_2 = None
-        self.current_button_pressed = 1
+            self.current_pathLossStr = pathLoss_Str
+            self.current_pathLossStr_2 = None
+            self.current_distance = distance_space
+            self.current_pathLoss = pathLoss
+            self.current_pathLoss_2 = None
+            self.current_button_pressed = 1
+        except ValueError as e:
+            self.error_dialog()
 
     def de_selection(self) -> None:
         self.current_pathLoss = None
@@ -1187,114 +1209,120 @@ class Ui_App(object):
             print(self.area_value.currentText())
 
     def itu_indoor_model(self):
-        # print("ITU Indoor Model Calculation")
-        f: float = float(self.frequency_indoor.text())
-        N: int = int(self.power_loss_value.currentText())
-        d = float(self.max_distance_value.text())
+        try:
+            # print("ITU Indoor Model Calculation")
+            f: float = float(self.frequency_indoor.text())
+            N: int = int(self.power_loss_value.currentText())
+            d = float(self.max_distance_value.text())
 
-        distance_space = np.arange(0.0001, d + 1, 0.001)
+            distance_space = np.arange(0.0001, d + 1, 0.001)
 
-        if self.floor_number.text() == '1' and self.area_value.currentText() == 'Office' and float(
-                self.frequency_indoor.text()) == 900.0:
-            pfn = 9
-        elif self.floor_number.text() == '2' and self.area_value.currentText() == 'Office' and float(
-                self.frequency_indoor.text()) == 900.0:
-            pfn = 19
-        elif self.floor_number.text() == '3' and self.area_value.currentText() == 'Office' and float(
-                self.frequency_indoor.text()) == 900.0:
-            pfn = 24
-        elif self.floor_number.text() == '1' and self.area_value.currentText() == 'Office' and float(
-                self.frequency_indoor.text()) == 5200.0:
-            pfn = 16
-        elif self.floor_number.text() == '1' and self.area_value.currentText() == 'Office' and float(
-                self.frequency_indoor.text()) == 5800.0:
-            pfn = 22
-        elif self.floor_number.text() == '2' and self.area_value.currentText() == 'Office' and float(
-                self.frequency_indoor.text()) == 5800.0:
-            pfn = 28
-        elif 1800.0 <= float(
-                self.frequency_indoor.text()) <= 2000.0 and self.area_value.currentText() == 'Residential':
-            pfn = int(self.floor_number.text()) * 4
-        elif 1800.0 <= float(
-                self.frequency_indoor.text()) <= 2000.0 and self.area_value.currentText() == 'Office':
-            pfn = 15 + 4 * (int(self.floor_number.text()) - 1)
-        elif 1800.0 <= float(
-                self.frequency_indoor.text()) <= 2000.0 and self.area_value.currentText() == 'Commercial':
-            pfn = 6 + 3 * (int(self.floor_number.text()) - 1)
-        else:
-            pfn = 0
+            if self.floor_number.text() == '1' and self.area_value.currentText() == 'Office' and float(
+                    self.frequency_indoor.text()) == 900.0:
+                pfn = 9
+            elif self.floor_number.text() == '2' and self.area_value.currentText() == 'Office' and float(
+                    self.frequency_indoor.text()) == 900.0:
+                pfn = 19
+            elif self.floor_number.text() == '3' and self.area_value.currentText() == 'Office' and float(
+                    self.frequency_indoor.text()) == 900.0:
+                pfn = 24
+            elif self.floor_number.text() == '1' and self.area_value.currentText() == 'Office' and float(
+                    self.frequency_indoor.text()) == 5200.0:
+                pfn = 16
+            elif self.floor_number.text() == '1' and self.area_value.currentText() == 'Office' and float(
+                    self.frequency_indoor.text()) == 5800.0:
+                pfn = 22
+            elif self.floor_number.text() == '2' and self.area_value.currentText() == 'Office' and float(
+                    self.frequency_indoor.text()) == 5800.0:
+                pfn = 28
+            elif 1800.0 <= float(
+                    self.frequency_indoor.text()) <= 2000.0 and self.area_value.currentText() == 'Residential':
+                pfn = int(self.floor_number.text()) * 4
+            elif 1800.0 <= float(
+                    self.frequency_indoor.text()) <= 2000.0 and self.area_value.currentText() == 'Office':
+                pfn = 15 + 4 * (int(self.floor_number.text()) - 1)
+            elif 1800.0 <= float(
+                    self.frequency_indoor.text()) <= 2000.0 and self.area_value.currentText() == 'Commercial':
+                pfn = 6 + 3 * (int(self.floor_number.text()) - 1)
+            else:
+                pfn = 0
 
-        pathLoss = 20 * np.log10(f) + N * np.log10(distance_space) + pfn - 28
+            pathLoss = 20 * np.log10(f) + N * np.log10(distance_space) + pfn - 28
 
-        pathLoss_Str = str(round(pathLoss[-1], 2))
+            pathLoss_Str = str(round(pathLoss[-1], 2))
 
-        distance_space *= 1
+            distance_space *= 1
 
-        self.graphics_view_2.clear()
-        self.graphics_view_2.setTitle(f"Path loss : {pathLoss_Str} dB")
-        self.graphics_view.setYRange(1, float(pathLoss_Str) + 10)
-        self.graphics_view.setXRange(0, float(d * 1000) + 10)
-        self.graphics_view_2.plot(distance_space, pathLoss)
+            self.graphics_view_2.clear()
+            self.graphics_view_2.setTitle(f"Path loss : {pathLoss_Str} dB")
+            self.graphics_view.setYRange(1, float(pathLoss_Str) + 10)
+            self.graphics_view.setXRange(0, float(d * 1000) + 10)
+            self.graphics_view_2.plot(distance_space, pathLoss)
 
-        self.current_pathLossStr = pathLoss_Str
-        self.current_pathLossStr_2 = None
-        self.current_distance = distance_space
-        self.current_pathLoss = pathLoss
-        self.current_pathLoss_2 = None
-        self.current_button_pressed = 2
+            self.current_pathLossStr = pathLoss_Str
+            self.current_pathLossStr_2 = None
+            self.current_distance = distance_space
+            self.current_pathLoss = pathLoss
+            self.current_pathLoss_2 = None
+            self.current_button_pressed = 2
+        except ValueError as e:
+            self.error_dialog()
 
     def log_distance_indoor_model(self):
-        # print("Free Space Outdoor Model Calculation")
-        d: float = float(self.max_distance_value.text())
-        d0: float = float(self.reference_distance_value.text())
-        path_loss_exponent: dict = {
-            'Retail Store': [2.2, 914],
-            'Grocery Store': [1.8, 914],
-            'Office': [2.2, 60000],
-            'Office with Soft Partition 900MHz': [2.4, 900],
-            'Office with Soft Partition 1.9GHz': [2.6, 1900],
-            'Office with Hard Partition ': [3.0, 1500],
-            'Textile or Chemical 1.3GHz': [2.0, 1300],
-            'Textile or Chemical 4GHz': [2.1, 4000],
-            'Commercial': [1.7, 60000],
-        }
-        distance_space = np.arange(0.0001, d + 1, 0.001)
-        distance_space_d0 = np.arange(0.0001, d0 + 1, 0.001)
+        try:
+            # print("Free Space Outdoor Model Calculation")
+            d: float = float(self.max_distance_value.text())
+            d0: float = float(self.reference_distance_value.text())
+            path_loss_exponent: dict = {
+                'Retail Store': [2.2, 914],
+                'Grocery Store': [1.8, 914],
+                'Office': [2.2, 60000],
+                'Office with Soft Partition 900MHz': [2.4, 900],
+                'Office with Soft Partition 1.9GHz': [2.6, 1900],
+                'Office with Hard Partition ': [3.0, 1500],
+                'Textile or Chemical 1.3GHz': [2.0, 1300],
+                'Textile or Chemical 4GHz': [2.1, 4000],
+                'Commercial': [1.7, 60000],
+            }
+            distance_space = np.arange(0.0001, d + 1, 0.001)
+            distance_space_d0 = np.arange(0.0001, d0 + 1, 0.001)
 
-        if self.path_loss_exp_value.currentText() in path_loss_exponent.keys():
-            free_space_pathLoss = 20 * (np.log10(distance_space_d0)) + 20 * (
-                np.log10(int(path_loss_exponent[self.path_loss_exp_value.currentText()][1]))) + 32.34
-            pathLoss = free_space_pathLoss + 10 * path_loss_exponent[self.path_loss_exp_value.currentText()][
-                0] * np.log10(d / d0)
-        else:
-            f: float = float(self.frequency_indoor.text())
-            free_space_pathLoss = 20 * (np.log10(distance_space_d0)) + 20 * (
-                np.log10(f)) + 32.34
+            if self.path_loss_exp_value.currentText() in path_loss_exponent.keys():
+                free_space_pathLoss = 20 * (np.log10(distance_space_d0)) + 20 * (
+                    np.log10(int(path_loss_exponent[self.path_loss_exp_value.currentText()][1]))) + 32.34
+                pathLoss = free_space_pathLoss + 10 * path_loss_exponent[self.path_loss_exp_value.currentText()][
+                    0] * np.log10(d / d0)
+            else:
+                f: float = float(self.frequency_indoor.text())
+                free_space_pathLoss = 20 * (np.log10(distance_space_d0)) + 20 * (
+                    np.log10(f)) + 32.34
 
-            pathLoss = free_space_pathLoss + 10 * 2.0 * np.log10(d / d0)
+                pathLoss = free_space_pathLoss + 10 * 2.0 * np.log10(d / d0)
 
-        if self.no_fading_rb.isChecked():
-            pass
-        else:
-            s = np.random.normal(1)
-            pathLoss = pathLoss + s
+            if self.no_fading_rb.isChecked():
+                pass
+            else:
+                s = np.random.normal(1)
+                pathLoss = pathLoss + s
 
-        pathLoss_Str = str(round(pathLoss[-1], 2))
+            pathLoss_Str = str(round(pathLoss[-1], 2))
 
-        distance_space_d0 *= 1
+            distance_space_d0 *= 1
 
-        self.graphics_view_2.clear()
-        self.graphics_view_2.setTitle(f"Path loss : {pathLoss_Str} dB")
-        self.graphics_view.setYRange(1, float(pathLoss_Str) + 10)
-        self.graphics_view.setXRange(0, float(d * 1000) + 10)
-        self.graphics_view_2.plot(distance_space_d0, pathLoss)
+            self.graphics_view_2.clear()
+            self.graphics_view_2.setTitle(f"Path loss : {pathLoss_Str} dB")
+            self.graphics_view.setYRange(1, float(pathLoss_Str) + 10)
+            self.graphics_view.setXRange(0, float(d * 1000) + 10)
+            self.graphics_view_2.plot(distance_space_d0, pathLoss)
 
-        self.current_pathLossStr = pathLoss_Str
-        self.current_pathLossStr_2 = None
-        self.current_distance = distance_space
-        self.current_pathLoss = pathLoss
-        self.current_pathLoss_2 = None
-        self.current_button_pressed = 2
+            self.current_pathLossStr = pathLoss_Str
+            self.current_pathLossStr_2 = None
+            self.current_distance = distance_space
+            self.current_pathLoss = pathLoss
+            self.current_pathLoss_2 = None
+            self.current_button_pressed = 2
+        except ValueError as e:
+            self.error_dialog()
 
     @staticmethod
     def dialog_menu():
@@ -1302,6 +1330,14 @@ class Ui_App(object):
         msg.setWindowTitle("About")
         msg.setText(
             "Stylianos Klados\nDimitra Papatsaroucha\nIraklis Skepasianos\nNikolaos Astyrakakis\nTerm Project @2021")
+
+        x = msg.exec_()
+
+    @staticmethod
+    def error_dialog():
+        msg = QMessageBox()
+        msg.setWindowTitle("About")
+        msg.setText("Please Retry ! Missing Value(s) !")
 
         x = msg.exec_()
 
